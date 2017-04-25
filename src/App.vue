@@ -43,7 +43,8 @@
     height: 100%
   }
   .middle-container{
-    width: 90%;
+    margin-top: 10px;
+    width: 80%;
     height: 85%;
     display: inline-block
   }
