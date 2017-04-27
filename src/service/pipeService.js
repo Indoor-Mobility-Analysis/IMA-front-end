@@ -47,7 +47,7 @@ var pipeService = new Vue({
       })
     },
 
-    //Distribute update record data
+    //Distribute update record
     emitRecordReady: function(msg){
       this.$emit(this.RECORDREADY, msg);
     },
@@ -80,11 +80,11 @@ var pipeService = new Vue({
     },
 
 
-    // Render on frame
-    emitRenderFrame: function(msg){
+    // Render on frame/ per seconds
+    emitRenderOneFrame: function(msg){
       this.$emit(this.RENDERFRAME, msg);
     },
-    onRenderFrame: function(callback){
+    onRenderOneFrame: function(callback){
       this.$on(this.RENDERFRAME,function(msg){
         callback(msg);
       })

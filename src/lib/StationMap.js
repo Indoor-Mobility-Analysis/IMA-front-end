@@ -5,15 +5,14 @@
 
 import * as d3 from 'd3'
 
-let StationMap = function(el, map){
+let StationMap = function(el, maps){
   this.$el = el;
-  this.layerId = map['layer'];
-  this.stationId = map['stationId'];
+
   this.height = el.clientHeight;
   this.width = el.clientWidth;
   this.margin = {top: 5, left: 5, right:5 ,bottom: 5};
-  this.map = map;
-  this.maps = map['allMaps'];
+
+  this.maps = maps;
   this.widthPerSvg = (this.width - this.margin.left - this.margin.right)
   this.heightPerSvg = this.height - this.margin.top - this.margin.bottom;
 
@@ -25,11 +24,16 @@ let StationMap = function(el, map){
 
   this.offsetX = undefined;
 
-  this.initContainer();
-  this.renderMap();
-
 
 };
+
+StationMap.prototype.setMap = function(mapObj){
+  this.layerId = mapObj['layer'];
+  this.stationId = mapObj['stationId'];
+  this.map = mapObj['map'];
+  this.initContainer();
+  this.renderMap();
+}
 StationMap.prototype.getStationId = function(){
   return this.stationId;
 }
@@ -44,35 +48,27 @@ StationMap.prototype.getScale = function(){
 }
 
 StationMap.prototype.initContainer = function(){
-
+  d3.select(this.$el).selectAll('.navmapcontainer').remove();
   this.svg = d3.select(this.$el)
     .append('svg')
     .attr('class', 'navmapcontainer')
     .attr('height', this.heightPerSvg)
     .attr('width', this.widthPerSvg)
-    // .style('margin-left', function(d, i){
-    //   if(i != 0) return _this.margin['left'] * 1.5;
-    //   else return _this.margin['left'] * 0.5;
-    // })
     .style('margin-top', this.margin['top'])
     .style('border-style', 'dashed')
     .style('border-color','#777')
     .style('border-width', 0.1)
     .style('border-opacity', 0.3)
 
-};
+  var largestX = 0;
+  var largestY = 0;
 
-StationMap.prototype.renderMap = function(){
-  let _this = this;
-  let largestX = 0;
-  let largestY = 0;
-
-  let smallestX = 10000;
-  let smallestY = 10000;
+  var smallestX = 10000;
+  var smallestY = 10000;
 
   this.maps.forEach(function(meshes){
-    let meshElements = meshes['data'];
-    let layerId = meshes['layer'];
+    let meshElements = meshes['map'];
+
     meshElements.forEach(function(eles){
       eles.forEach(function(ele){
         largestX = largestX>ele[0]?largestX:ele[0];
@@ -87,7 +83,18 @@ StationMap.prototype.renderMap = function(){
   this.mapAttr['smallestX'] = smallestX;
   this.mapAttr['largestY'] = largestY;
   this.mapAttr['smallestY'] = smallestY;
+};
+
+StationMap.prototype.renderMap = function(){
+  let _this = this;
+
   console.log('this.mapAttr', this.mapAttr);
+
+  var largestX = this.mapAttr['largestX'];
+  var smallestX = this.mapAttr['smallestX'];
+  var largestY = this.mapAttr['largestY'];
+  var smallestY = this.mapAttr['smallestY'];
+
   let yxRatioInData = (largestY - smallestY) / (largestX - smallestX);
 
 
@@ -101,8 +108,8 @@ StationMap.prototype.renderMap = function(){
     _tempHeight = _tempWidth * yxRatioInData;
   }
 
-  this.xScale = d3.scaleLinear().domain([smallestX, largestX]).range([0, _tempWidth]);
-  this.yScale = d3.scaleLinear().domain([smallestY, largestY]).range([_tempHeight, 0]);
+  this.xScale = d3.scaleLinear().domain([smallestX, largestX]).range([5, _tempWidth - 5]);
+  this.yScale = d3.scaleLinear().domain([smallestY, largestY]).range([_tempHeight - 5, 5]);
 
   this.reXScale = this.xScale.invert;
   let offsetX = (this.widthPerSvg - _tempWidth) / 2;
@@ -141,7 +148,7 @@ StationMap.prototype.renderMap = function(){
   this.brush = brush;
 
   this.layerContainer = this.svg.append('g').attr('class','mapcontainer').attr('transform', 'translate(' + offsetX + ',0)');
-  let meshes = this.map['data'];
+  let meshes = this.map;
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
     .attr('d', elePath)

@@ -15,7 +15,7 @@
   }
 </script>
 
-<style>
+<style scoped>
   .station-selection-container{
     background-color: #8bb6a6;
     /*height: 100%*/

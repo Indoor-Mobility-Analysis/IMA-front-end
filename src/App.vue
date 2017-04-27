@@ -2,9 +2,9 @@
   <div id="app">
     <OverviewMap class="top-container"></OverviewMap>
     <section class="middle-container">
-        <StationSelection class="middle-left"></StationSelection>
-        <VideoAnalysis class="middle-middle"></VideoAnalysis>
-        <Visualization class="middle-right"></Visualization>
+      <StationSelection class="middle-left"></StationSelection>
+      <VideoAnalysis class="middle-middle"></VideoAnalysis>
+      <Visualization class="middle-right"></Visualization>
     </section>
     <footer class="def-footer">
       footer
@@ -17,7 +17,8 @@
   import StationSelection from './components/StationSelection.vue'
   import VideoAnalysis from './components/VideoAnalysis.vue'
   import Visualization from './components/Visualization.vue'
-
+  import pipeService from './service/pipeService'
+  import dataService from './service/dataService'
   export default {
     name: 'app',
     components:{
@@ -25,6 +26,24 @@
       StationSelection,
       VideoAnalysis,
       Visualization
+    },
+    data(){
+      return {
+
+      }
+    },
+    mounted(){
+      let _this = this;
+//      pipeService.onMapReady(function(mapsObj){
+//        _this.records = [];
+//        _this.currentRecord = _this.records;
+//        _this.startUpdate();
+//      })
+    },
+    methods:{
+      startUpdate(){
+
+      }
     }
   }
 </script>
