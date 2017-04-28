@@ -48,6 +48,8 @@
         _this.mapDataArr.forEach(function(mapObj){
           if(mapObj['floor'] == floorSelect){
             _this.stationMap.setMap(mapObj);
+            //Update rendering
+
           }
         })
       }
