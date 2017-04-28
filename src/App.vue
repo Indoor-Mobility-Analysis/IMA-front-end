@@ -33,12 +33,6 @@
       }
     },
     mounted(){
-      let _this = this;
-//      pipeService.onMapReady(function(mapsObj){
-//        _this.records = [];
-//        _this.currentRecord = _this.records;
-//        _this.startUpdate();
-//      })
     },
     methods:{
       startUpdate(){
@@ -79,7 +73,7 @@
   }
   .middle-right{
     height: 100%;
-    width: 50%;
+    width: 48%;
     float: left;
   }
   .def-footer{

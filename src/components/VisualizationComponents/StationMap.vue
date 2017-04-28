@@ -1,7 +1,7 @@
 <template>
   <div class="station-map-container">
     <div class="layer-select-ratio">
-      <el-radio v-for="layerObj in mapDataArr" class="radio" v-model="layerSelect" v-bind:label="layerObj.layer" :key="layerObj.layer">Layer:{{layerObj.layer}}</el-radio>
+      <el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>
     </div>
   </div>
 </template>
@@ -14,7 +14,7 @@
     data(){
       return {
         title: 'Map',
-        layerSelect: 0,
+        floorSelect: 0,
         mapDataArr:[],
         stationMap: null
       }
@@ -28,25 +28,25 @@
         _this.mapDataArr = _this.parseMaps(mapData);
         _this.mapDataArr.forEach(function(mapObj){
           if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
-          if(mapObj['layer'] == _this.layerSelect){
+          if(mapObj['floor'] == _this.floorSelect){
             _this.stationMap.setMap(mapObj);
           }
         })
-      })
+      });
+      // Update render
       pipeService.onRenderOneFrame(function(frame){
-        console.log('frame', frame['time_stamp'])
+        console.log('frame', frame)
       })
     },
     watch:{
-      layerSelect(layerSelect){
+      floorSelect(floorSelect){
         let _this = this;
-        _this.layerSelect = layerSelect;
         if(!this.stationMap){
           console.log('No map');
           return;
         }
         _this.mapDataArr.forEach(function(mapObj){
-          if(mapObj['layer'] == layerSelect){
+          if(mapObj['floor'] == floorSelect){
             _this.stationMap.setMap(mapObj);
           }
         })
@@ -59,7 +59,7 @@
           if(mapData[i]!= undefined){
             mapDataArr.push({
               map: mapData[i],
-              layer: i,
+              floor: i,
               stationId: mapData['stationId']
             })
           }

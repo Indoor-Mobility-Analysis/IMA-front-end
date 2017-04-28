@@ -90,11 +90,12 @@
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
           }else{
-
           }
           time = new Date();
         }, 1000);
 
+        _this.getRecordsFromTime(time_stamp, timeGap);
+        time_stamp += timeGap;
         setInterval(function(){
           _this.getRecordsFromTime(time_stamp, timeGap);
           time_stamp += timeGap;
@@ -136,7 +137,6 @@
             aggregates.push(obj);
           }
         });
-
         return aggregates
       }
     }
@@ -146,7 +146,9 @@
 <style>
   .visualization-container{
     background-color: #ae93b6;
-    height: 100%
+    height: 100%;
+    margin-left: 10px;
+
   }
   .el-tabs__content{
     height: 90%
