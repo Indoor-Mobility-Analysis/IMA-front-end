@@ -9,7 +9,7 @@
       </el-dropdown-menu>
     </el-dropdown>
 
-    <el-tabs type="border-card" style="height: 100%">
+    <el-tabs type="border-card">
       <el-tab-pane style="height: 100%">
         <span slot="label"><i class="el-icon-date"></i> Map</span>
         <StationMap  style="height: 100%"></StationMap>
@@ -57,6 +57,7 @@
 
       //Once a station is select
       pipeService.onMapReady(function(mapsObj){
+        console.log('mapsObj: ', mapsObj);
         _this.records = [];
         _this.startUpdate();
       })
@@ -75,6 +76,7 @@
 
         // Get legend
         dataService.rendLegendConfiguration(_this.stationId, function(legendConfig){
+          console.log('legendConfig', legendConfig);
           pipeService.emitLegendConfigReady(legendConfig);
         });
       },
@@ -86,6 +88,7 @@
         let timeGap = 5000;
 
         setInterval(function(){
+          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
           if(_this.currentRecord['next']){
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
@@ -104,8 +107,8 @@
       getRecordsFromTime(time_stamp, timeRange) {
         let _this = this;
         dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function(records){
-
           records = _this.aggregateRecords(records);
+          console.log('records: ', records);
           if(!records && records.length == 0) return;
 
           for(var i = 0, ilen = records.length; i < ilen; i++){
@@ -151,6 +154,10 @@
 
   }
   .el-tabs__content{
-    height: 90%
+    height: 90%;
+  }
+  
+  .el-tabs--border-card{
+    height: calc(100% - 23px);
   }
 </style>

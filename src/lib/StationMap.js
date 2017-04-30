@@ -8,8 +8,13 @@ import * as d3 from 'd3'
 let StationMap = function(el, maps){
   this.$el = el;
 
-  this.height = el.clientHeight;
-  this.width = el.clientWidth;
+  // this.height = el.clientHeight;
+  // this.width = el.clientWidth;
+
+  // add a div 'layer-station-map' for embedding heatmap canvas
+  this.height = d3.select('.layer-station-map').node().getBoundingClientRect().height;
+  this.width = d3.select('.layer-station-map').node().getBoundingClientRect().width;
+  
   this.margin = {top: 5, left: 5, right:5 ,bottom: 5};
 
   this.maps = maps;
@@ -28,7 +33,7 @@ let StationMap = function(el, maps){
 };
 
 StationMap.prototype.setMap = function(mapObj){
-  this.layerId = mapObj['layer'];
+  this.layerId = mapObj['floor'];
   this.stationId = mapObj['stationId'];
   this.map = mapObj['map'];
   this.initContainer();
@@ -48,8 +53,15 @@ StationMap.prototype.getScale = function(){
 }
 
 StationMap.prototype.initContainer = function(){
-  d3.select(this.$el).selectAll('.navmapcontainer').remove();
-  this.svg = d3.select(this.$el)
+  console.log()
+  d3.select(this.$el).selectAll('.layer-station-map').remove();
+  this.divContainer = d3.select(this.$el)
+    .append('div')
+    .attr('class', 'layer-station-map')
+
+  console.log('div height: ', this.divContainer.node().getBoundingClientRect());
+  console.log('div height: ', this.divContainer.style('height'));
+  this.svg = this.divContainer
     .append('svg')
     .attr('class', 'navmapcontainer')
     .attr('height', this.heightPerSvg)
@@ -120,34 +132,34 @@ StationMap.prototype.renderMap = function(){
     .y(function(d) { return _this.yScale(d[1]); });
 
 
-  let brushended = function(){
-    let layer = _this.layerId;
-    var s = d3.event.selection;
-    if(!s) return;
+  // let brushended = function(){
+  //   let layer = _this.layerId;
+  //   var s = d3.event.selection;
+  //   if(!s) return;
 
-    let xRange = [_this.xScale.invert(s[0][0]), _this.xScale.invert(s[1][0])];
-    let yRange = [_this.yScale.invert(s[0][1]), _this.yScale.invert(s[1][1])];
-    let selectionWidth = Math.abs(s[1][0] - s[0][0]);
-    let selectionHeight = Math.abs(s[0][1] - s[1][1]);
+  //   let xRange = [_this.xScale.invert(s[0][0]), _this.xScale.invert(s[1][0])];
+  //   let yRange = [_this.yScale.invert(s[0][1]), _this.yScale.invert(s[1][1])];
+  //   let selectionWidth = Math.abs(s[1][0] - s[0][0]);
+  //   let selectionHeight = Math.abs(s[0][1] - s[1][1]);
 
-    if(_this.brushEndCallback){
-      // _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight, layerObj, map, _this.legendConfig['legendConfig'][layer]);
-      _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight,_this.map, _this.layerId,_this.legendConfig[_this.layerId]);
-    }
+  //   if(_this.brushEndCallback){
+  //     // _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight, layerObj, map, _this.legendConfig['legendConfig'][layer]);
+  //     _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight,_this.map, _this.layerId,_this.legendConfig[_this.layerId]);
+  //   }
 
-  }
-  let brush = d3.brush()
-    .extent([[0,0], [_tempWidth, _tempHeight]])
-    .on('start', function(){
-      if(_this.brushStartCallBack){
-        _this.brushStartCallBack(_this.layerId);
-      }
-    })
-    .on("end", brushended);
+  // }
+  // let brush = d3.brush()
+  //   .extent([[0,0], [_tempWidth, _tempHeight]])
+  //   .on('start', function(){
+  //     if(_this.brushStartCallBack){
+  //       _this.brushStartCallBack(_this.layerId);
+  //     }
+  //   })
+  //   .on("end", brushended);
 
-  this.brush = brush;
+  // this.brush = brush;
 
-  this.layerContainer = this.svg.append('g').attr('class','mapcontainer').attr('transform', 'translate(' + offsetX + ',0)');
+  this.layerContainer = this.svg.append('g').attr('class','mapcontainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   let meshes = this.map;
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
@@ -157,26 +169,29 @@ StationMap.prototype.renderMap = function(){
     .attr('stroke-width', 0.3)
     .attr('stroke-opacity', 0.4)
 
-  this.layerContainer.call(brush);
+  // this.layerContainer.call(brush);
 };
 
-StationMap.prototype.on = function(event, callback){
-  if(event == 'brushend'){
-    this.brushEndCallback = callback;
-  }else if(event == 'brushstart'){
-    this.brushStartCallBack = callback;
-  }
-};
-StationMap.prototype.clearBrush = function(){
-  this.layerContainer.call(this.brush.move, null);
-}
+// StationMap.prototype.on = function(event, callback){
+//   if(event == 'brushend'){
+//     this.brushEndCallback = callback;
+//   }else if(event == 'brushstart'){
+//     this.brushStartCallBack = callback;
+//   }
+// };
+// StationMap.prototype.clearBrush = function(){
+//   this.layerContainer.call(this.brush.move, null);
+// }
 
 StationMap.prototype.setLegend = function(legendConfig){
+
+  console.log('in stationmap, lengendConfig: ', legendConfig);
+
   let _this = this;
   this.legendConfig = legendConfig;
 
 
-  let legendContainer = this.layerContainer.append('g').attr('class', 'legendContainer');
+  let legendContainer = this.svg.append('g').attr('class', 'legendContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   legendContainer.on('mousemove', function(d){
 
   })

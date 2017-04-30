@@ -3,6 +3,8 @@
     <div class="layer-select-ratio">
       <el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>
     </div>
+    <div class="layer-station-map">
+    </div>
   </div>
 </template>
 
@@ -27,11 +29,22 @@
       pipeService.onMapReady(function(mapData){
         _this.mapDataArr = _this.parseMaps(mapData);
         _this.mapDataArr.forEach(function(mapObj){
+          console.log('_this.$el: ', _this.$el);
           if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
           if(mapObj['floor'] == _this.floorSelect){
             _this.stationMap.setMap(mapObj);
           }
         })
+      });
+      pipeService.onLegendConfigReady(function(data){
+        console.log('_this.legendData: ', data);
+        console.log('_this.StationMap: ', _this.stationMap);
+        console.log('_this.StationMap.getStationId(): ', _this.stationMap.getStationId());
+        _this.legendData = data;
+        if(_this.legendData && _this.stationMap && (_this.stationMap.getStationId() == _this.legendData['stationId'])){
+          console.log('create legend');
+          _this.stationMap.setLegend(_this.legendData['legendConfig']);
+        }
       });
       // Update render
       pipeService.onRenderOneFrame(function(frame){
@@ -52,6 +65,7 @@
 
           }
         })
+        _this.stationMap.setLegend(_this.legendData['legendConfig']);
       }
     },
     methods:{
@@ -72,7 +86,7 @@
   }
 </script>
 
-<style scoped>
+<style>
   .station-map-container{
     /*background-color: #b6b08f;*/
     height: 100%;
@@ -80,5 +94,9 @@
   }
   .layer-select-ratio{
     margin-top: -5px;
+  }
+
+  .layer-station-map{
+    height: calc(100% - 23px);
   }
 </style>
