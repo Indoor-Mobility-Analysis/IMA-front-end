@@ -29,6 +29,7 @@ let StationMap = function(el, maps){
   this.reYScale = undefined;
 
   this.offsetX = undefined;
+  this.offsetY = 0;
 
 
 };
@@ -50,7 +51,8 @@ StationMap.prototype.getScale = function(){
   return {
     'xScale': this.xScale,
     'yScale': this.yScale,
-    'offsetX': this.offsetX
+    'offsetX': this.offsetX,
+    'offsetY': this.offsetY
   }
 }
 
@@ -168,7 +170,7 @@ StationMap.prototype.renderMap = function(){
 
   // this.brush = brush;
 
-  this.layerContainer = this.svg.append('g').attr('class','mapcontainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+  this.layerContainer = this.svg.append('g').attr('class','mapContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   let meshes = this.map;
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
@@ -178,6 +180,10 @@ StationMap.prototype.renderMap = function(){
     .attr('stroke-width', 0.3)
     .attr('stroke-opacity', 0.4)
 
+
+  this.legendContainer = this.svg.append('g').attr('class', 'legendContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+   // bubble container
+  this.bubbleContainer = this.svg.append('g').attr('class', 'bubblesContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   // this.layerContainer.call(brush);
 };
 
@@ -200,14 +206,13 @@ StationMap.prototype.setLegend = function(legendConfig){
   this.legendConfig = legendConfig;
 
 
-  let legendContainer = this.svg.append('g').attr('class', 'legendContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
-  legendContainer.on('mousemove', function(d){
+  // this.mapAttrlegendContainer.on('mousemove', function(d){
 
-  })
+  // })
   let legendArray = legendConfig[this.layerId];
 
   if(legendArray == undefined) return
-  let lcs = legendContainer.selectAll('.legend').data(legendArray).enter().append('g')
+  let lcs = this.legendContainer.selectAll('.legend').data(legendArray).enter().append('g')
     .attr('transform', function(d, i){
       let x = _this.xScale(d['pos'][0]);
       let y = _this.yScale(d['pos'][1]);
@@ -272,6 +277,63 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
 
 StationMap.prototype.clearHeatmapCanvas = function() {
     this.heatmapInstance.setData({ max: 0, data: [] })
+};
+
+
+// bubblemap Part
+StationMap.prototype.updateBubblemap = function(frameData){
+  let _this = this;
+  // need to parser renderData
+  console.log('layerId: ', _this.layerId);
+  console.log('updateBubblemap: ', frameData);
+  let bubblesData = frameData[_this.layerId]['small_clusters'];
+  console.log('bubblesData: ', bubblesData);
+  let bubbles = _this.bubbleContainer.selectAll('circle').data(bubblesData, function(d) {return d[0]+'_'+d[1];})
+
+  bubbles
+      .transition()
+      .attr('r', function(d){ 
+          return 10;})
+      .text(function(d) {
+          return 'density: '+d[4];
+      })
+      .attr('opacity', 0.3)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 2)
+      .attr('fill', function(d) {
+        return 'blue';
+      })
+  
+  bubbles
+      .enter()
+      .append('circle')
+      .attr('class', 'bubble')
+      .attr('cx', function(d) {
+          return _this.xScale(d[0]);
+      })
+      .attr('cy', function(d) {
+          return _this.yScale(d[1]);
+      })
+      .attr('r', function(d) { 
+          return 10;})
+      .attr('fill', function(d) {
+        return 'blue';
+      })
+      .attr('opacity', 0.3)
+      .attr('stroke', 'white')
+      .attr('stroke-width', 2)
+      .append('title')
+      .attr('class', 'circleTitle')
+      .text(function(d) {
+          return 'density: '+d[4];
+      })
+
+  bubbles
+      .exit()
+      .transition()
+      .attr('fill', 'blue')
+      .attr('r', 0)
+      .remove();
 };
 
 export default StationMap

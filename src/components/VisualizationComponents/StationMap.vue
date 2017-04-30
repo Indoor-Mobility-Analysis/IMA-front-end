@@ -52,7 +52,8 @@
         _this.frameData = _this.parseFrame(frame);
         console.log('frameData: ', _this.frameData);
         if(_this.stationMap){
-          _this.stationMap.updateHeatmapCanvas(_this.frameData)
+          _this.stationMap.updateHeatmapCanvas(_this.frameData);
+          _this.stationMap.updateBubblemap(_this.frameData);
         }
       })
     },
