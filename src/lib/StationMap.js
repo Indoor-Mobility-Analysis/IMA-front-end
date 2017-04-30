@@ -4,6 +4,7 @@
 
 
 import * as d3 from 'd3'
+import h337 from 'heatmap.js'
 
 let StationMap = function(el, maps){
   this.$el = el;
@@ -38,6 +39,7 @@ StationMap.prototype.setMap = function(mapObj){
   this.map = mapObj['map'];
   this.initContainer();
   this.renderMap();
+  this.initHeatmapContainer();
 }
 StationMap.prototype.getStationId = function(){
   return this.stationId;
@@ -53,24 +55,31 @@ StationMap.prototype.getScale = function(){
 }
 
 StationMap.prototype.initContainer = function(){
-  console.log()
+  
   d3.select(this.$el).selectAll('.layer-station-map').remove();
   this.divContainer = d3.select(this.$el)
     .append('div')
     .attr('class', 'layer-station-map')
+    .style('border-style', 'dashed')
+    .style('border-color','#777')
+    .style('border-width', '0.1px')
+    .style('border-opacity', 0.3)
 
-  console.log('div height: ', this.divContainer.node().getBoundingClientRect());
-  console.log('div height: ', this.divContainer.style('height'));
+  console.log('this.$el: ', this.$el);
+  console.log('this.divContainer : ', this.divContainer.node());
+
+
+  // to make the svg and canvas have same height and width, we use this.height, and this.width.
   this.svg = this.divContainer
     .append('svg')
     .attr('class', 'navmapcontainer')
-    .attr('height', this.heightPerSvg)
-    .attr('width', this.widthPerSvg)
-    .style('margin-top', this.margin['top'])
-    .style('border-style', 'dashed')
-    .style('border-color','#777')
-    .style('border-width', 0.1)
-    .style('border-opacity', 0.3)
+    .attr('height', this.height)
+    .attr('width', this.width)
+    // .style('margin-top', this.margin['top'])
+    // .style('border-style', 'dashed')
+    // .style('border-color','#777')
+    // .style('border-width', 0.1)
+    // .style('border-opacity', 0.3)
 
   var largestX = 0;
   var largestY = 0;
@@ -216,6 +225,53 @@ StationMap.prototype.setLegend = function(legendConfig){
       console.log('over', d['pos'][0],d['pos'][1]);
 
     })
+};
+
+
+// Canvas Heatmap Part
+StationMap.prototype.initHeatmapContainer = function(){
+  if (this.canvasHeatmap != null) {
+      this.canvasHeatmap.remove();
+  }
+  let config = {
+      // container: document.getElementById('#' + this.heatmapId),
+      container: this.divContainer.node(), // document.querySelector('#' + this.heatmapId),
+      radius: 10,
+      maxOpacity: 0.5,
+      minOpacity: 0,
+      blur: 0.75
+  }
+  this.heatmapInstance = h337.create(config)
+  this.canvasHeatmap = this.$el.querySelector('.heatmap-canvas')
+}
+
+
+StationMap.prototype.updateHeatmapCanvas = function(frameData) {
+    let record = frameData[this.layerId];
+    let points = [];
+    // let max = 0
+    for (let pointIdx in record['small_clusters']) {
+        let temp = {
+            x: Math.round(this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX),
+            y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])),
+            value: record['small_clusters'][pointIdx][4]
+        }
+        // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
+        // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
+        points.push(temp)
+    }
+    // heatmap data format
+    let data = {
+        max: 1,
+        data: points
+    }
+    // if you have a set of data points always use setData instead of addData
+    // for data initialization
+    this.heatmapInstance.setData(data)
+};
+
+StationMap.prototype.clearHeatmapCanvas = function() {
+    this.heatmapInstance.setData({ max: 0, data: [] })
 };
 
 export default StationMap

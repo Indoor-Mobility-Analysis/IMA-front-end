@@ -49,6 +49,11 @@
       // Update render
       pipeService.onRenderOneFrame(function(frame){
         console.log('frame', frame)
+        _this.frameData = _this.parseFrame(frame);
+        console.log('frameData: ', _this.frameData);
+        if(_this.stationMap){
+          _this.stationMap.updateHeatmapCanvas(_this.frameData)
+        }
       })
     },
     watch:{
@@ -81,6 +86,18 @@
           }
         }
         return mapDataArr;
+      },
+      parseFrame(oneFrame){
+        let _this = this;
+        if(!oneFrame['records']) return;
+        let records = oneFrame['records']
+        let recordsObj = {}
+        for(var i = 10, smallest = -10; i > smallest; i--){
+          if(records[i]!= undefined){
+            recordsObj[i==0?i: -i] = records[i];
+          }
+        }
+        return recordsObj;
       }
     }
   }
