@@ -15,7 +15,7 @@ let StationMap = function(el, maps){
   // add a div 'layer-station-map' for embedding heatmap canvas
   this.height = d3.select('.layer-station-map').node().getBoundingClientRect().height;
   this.width = d3.select('.layer-station-map').node().getBoundingClientRect().width;
-  
+
   this.margin = {top: 5, left: 5, right:5 ,bottom: 5};
 
   this.maps = maps;
@@ -57,7 +57,7 @@ StationMap.prototype.getScale = function(){
 }
 
 StationMap.prototype.initContainer = function(){
-  
+
   d3.select(this.$el).selectAll('.layer-station-map').remove();
   this.divContainer = d3.select(this.$el)
     .append('div')
@@ -77,11 +77,12 @@ StationMap.prototype.initContainer = function(){
     .attr('class', 'navmapcontainer')
     .attr('height', this.height)
     .attr('width', this.width)
-    // .style('margin-top', this.margin['top'])
-    // .style('border-style', 'dashed')
-    // .style('border-color','#777')
-    // .style('border-width', 0.1)
-    // .style('border-opacity', 0.3)
+  this.rootContainer = this.svg.append('g').attr('class', 'rootContainer');
+  // .style('margin-top', this.margin['top'])
+  // .style('border-style', 'dashed')
+  // .style('border-color','#777')
+  // .style('border-width', 0.1)
+  // .style('border-opacity', 0.3)
 
   var largestX = 0;
   var largestY = 0;
@@ -170,7 +171,24 @@ StationMap.prototype.renderMap = function(){
 
   // this.brush = brush;
 
-  this.layerContainer = this.svg.append('g').attr('class','mapContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+  this.layerContainer = this.rootContainer.append('g').attr('class','mapContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+
+  // Add interactions
+  this.svg.call(d3.zoom()
+    .scaleExtent([1 / 2, 8])
+    .on("zoom", zoomed))
+
+  function zoomed() {
+    _this.rootContainer.attr("transform", d3.event.transform);
+  }
+
+  // var drag = d3.behavior.drag()
+  //   .origin(function(d) { return d; })
+  //   .on("dragstart", dragstarted)
+  //   .on("drag", dragged)
+  //   .on("dragend", dragended);
+
+
   let meshes = this.map;
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
@@ -181,9 +199,9 @@ StationMap.prototype.renderMap = function(){
     .attr('stroke-opacity', 0.4)
 
 
-  this.legendContainer = this.svg.append('g').attr('class', 'legendContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
-   // bubble container
-  this.bubbleContainer = this.svg.append('g').attr('class', 'bubblesContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+  this.legendContainer = this.rootContainer.append('g').attr('class', 'legendContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+  // bubble container
+  this.bubbleContainer = this.rootContainer.append('g').attr('class', 'bubblesContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   // this.layerContainer.call(brush);
 };
 
@@ -236,15 +254,15 @@ StationMap.prototype.setLegend = function(legendConfig){
 // Canvas Heatmap Part
 StationMap.prototype.initHeatmapContainer = function(){
   if (this.canvasHeatmap != null) {
-      this.canvasHeatmap.remove();
+    this.canvasHeatmap.remove();
   }
   let config = {
-      // container: document.getElementById('#' + this.heatmapId),
-      container: this.divContainer.node(), // document.querySelector('#' + this.heatmapId),
-      radius: 10,
-      maxOpacity: 0.5,
-      minOpacity: 0,
-      blur: 0.75
+    // container: document.getElementById('#' + this.heatmapId),
+    container: this.divContainer.node(), // document.querySelector('#' + this.heatmapId),
+    radius: 10,
+    maxOpacity: 0.5,
+    minOpacity: 0,
+    blur: 0.75
   }
   this.heatmapInstance = h337.create(config)
   this.canvasHeatmap = this.$el.querySelector('.heatmap-canvas')
@@ -252,31 +270,31 @@ StationMap.prototype.initHeatmapContainer = function(){
 
 
 StationMap.prototype.updateHeatmapCanvas = function(frameData) {
-    let record = frameData[this.layerId];
-    let points = [];
-    // let max = 0
-    for (let pointIdx in record['small_clusters']) {
-        let temp = {
-            x: Math.round(this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX),
-            y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])),
-            value: record['small_clusters'][pointIdx][4]
-        }
-        // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
-        // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
-        points.push(temp)
+  let record = frameData[this.layerId];
+  let points = [];
+  // let max = 0
+  for (let pointIdx in record['small_clusters']) {
+    let temp = {
+      x: Math.round(this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX),
+      y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])),
+      value: record['small_clusters'][pointIdx][4]
     }
-    // heatmap data format
-    let data = {
-        max: 1,
-        data: points
-    }
-    // if you have a set of data points always use setData instead of addData
-    // for data initialization
-    this.heatmapInstance.setData(data)
+    // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
+    // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
+    points.push(temp)
+  }
+  // heatmap data format
+  let data = {
+    max: 1,
+    data: points
+  }
+  // if you have a set of data points always use setData instead of addData
+  // for data initialization
+  this.heatmapInstance.setData(data)
 };
 
 StationMap.prototype.clearHeatmapCanvas = function() {
-    this.heatmapInstance.setData({ max: 0, data: [] })
+  this.heatmapInstance.setData({ max: 0, data: [] })
 };
 
 
@@ -291,49 +309,49 @@ StationMap.prototype.updateBubblemap = function(frameData){
   let bubbles = _this.bubbleContainer.selectAll('circle').data(bubblesData, function(d) {return d[0]+'_'+d[1];})
 
   bubbles
-      .transition()
-      .attr('r', function(d){ 
-          return 10;})
-      .text(function(d) {
-          return 'density: '+d[4];
-      })
-      .attr('opacity', 0.3)
-      .attr('stroke', 'white')
-      .attr('stroke-width', 2)
-      .attr('fill', function(d) {
-        return 'blue';
-      })
-  
-  bubbles
-      .enter()
-      .append('circle')
-      .attr('class', 'bubble')
-      .attr('cx', function(d) {
-          return _this.xScale(d[0]);
-      })
-      .attr('cy', function(d) {
-          return _this.yScale(d[1]);
-      })
-      .attr('r', function(d) { 
-          return 10;})
-      .attr('fill', function(d) {
-        return 'blue';
-      })
-      .attr('opacity', 0.3)
-      .attr('stroke', 'white')
-      .attr('stroke-width', 2)
-      .append('title')
-      .attr('class', 'circleTitle')
-      .text(function(d) {
-          return 'density: '+d[4];
-      })
+    .transition()
+    .attr('r', function(d){
+      return 10;})
+    .text(function(d) {
+      return 'density: '+d[4];
+    })
+    .attr('opacity', 0.3)
+    .attr('stroke', 'white')
+    .attr('stroke-width', 2)
+    .attr('fill', function(d) {
+      return 'blue';
+    })
 
   bubbles
-      .exit()
-      .transition()
-      .attr('fill', 'blue')
-      .attr('r', 0)
-      .remove();
+    .enter()
+    .append('circle')
+    .attr('class', 'bubble')
+    .attr('cx', function(d) {
+      return _this.xScale(d[0]);
+    })
+    .attr('cy', function(d) {
+      return _this.yScale(d[1]);
+    })
+    .attr('r', function(d) {
+      return 10;})
+    .attr('fill', function(d) {
+      return 'blue';
+    })
+    .attr('opacity', 0.3)
+    .attr('stroke', 'white')
+    .attr('stroke-width', 2)
+    .append('title')
+    .attr('class', 'circleTitle')
+    .text(function(d) {
+      return 'density: '+d[4];
+    })
+
+  bubbles
+    .exit()
+    .transition()
+    .attr('fill', 'blue')
+    .attr('r', 0)
+    .remove();
 };
 
 export default StationMap

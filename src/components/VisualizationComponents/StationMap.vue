@@ -117,4 +117,7 @@
   .layer-station-map{
     height: calc(100% - 23px);
   }
+  canvas{
+    pointer-events: none;
+  }
 </style>
