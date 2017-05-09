@@ -55,7 +55,6 @@ function readStationRecord(callback){
   })
 }
 
-
 // Added by Qing Du (q.du@ust.hk)
 function readPeopleCount(day, time, callback){
   const url = `${dataServerUrl}/getPeopleCount`
