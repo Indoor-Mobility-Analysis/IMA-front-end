@@ -192,5 +192,4 @@
     display:-webkit-box;
     height:40px;
     font-size:18px;
-  }
-</style>
+  }bind
