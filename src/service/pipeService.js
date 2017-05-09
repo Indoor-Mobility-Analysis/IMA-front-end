@@ -14,7 +14,6 @@ var pipeService = new Vue({
     REGIONBRUSHED: 'region_brushed',
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
     RENDERFRAME: 'render_frame',
-
     DATETIMESELECTED: 'datetime_selected'
   },
 
@@ -93,15 +92,15 @@ var pipeService = new Vue({
     },
 
     //Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
+    emitDatetimeSelected: function(msg){
+      console.log(msg)
+      this.$emit(this.DATETIMESELECTED, msg)
+    },
     onDatetimeSelected: function(callback){
       this.$on(this.DATETIMESELECTED, function(msg){
         callback(msg)
       })
     },
-    emitDateSelected: function(msg){
-      this.$emit(this.DATETIMESELECTED, msg)
-    }
-
   }
 });
 

@@ -11,8 +11,8 @@
     data(){
       return {
         title: 'Station Point Component',
-        stationID: null,
-        date: null,
+        stationId: null,
+        day: null,
         time: null,
         count: null,
         color: null,
@@ -28,15 +28,15 @@
         var hour = dt.getHours();
         var minu = dt.getMinutes();
 
-        _this.date = dt.getDay();
+        _this.day = dt.getDay();
         _this.time = (hour - 8) * 12 + Math.floor(minu / 5);
-        tup = dataService.readPeopleCount(_this.stationId, day, time);
+        var tup = dataService.readPeopleCount(_this.stationId, _this.day, _this.time);
         _this.count = tup[1];
         _this.max = tup[0];
 
         var rrr = new Color(218, 4, 0),
-          ggg = new Color(57, 157, 53),
-          yyy = new Color(209, 127, 32);
+            ggg = new Color(57, 157, 53),
+            yyy = new Color(209, 127, 32);
 
         if (_this.count > _this.max / 2) {
           start = yyy,
@@ -47,7 +47,7 @@
         var r = Interpolate(startColors.r, endColors.r, 50, _this.count);
         var g = Interpolate(startColors.g, endColors.g, 50, _this.count);
         var b = Interpolate(startColors.b, endColors.b, 50, _this.count);
-        console.log('run here',datetime);
+        console.log('run here', datetime);
 
       })
     },

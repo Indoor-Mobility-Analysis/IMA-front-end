@@ -1,14 +1,13 @@
 <template>
   <div class="overview-map-container">
-    <div >This is a {{title}}</div>
+    <div >This is an {{title}}</div>
     <div class="component-container">
       <div class="map-container">
         <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/>
         <StationPoints v-for="station in stations" v-bind:stationObj="station" v-bind:key="station.stationId"></StationPoints>
       </div>
     </div>
-    <div class="col-md-4">
-      <label>Please select a date and a timestamp that you would like to review:</label>
+    <div class="picker-container">
       <datetimepicker></datetimepicker>
     </div>
   </div>
@@ -30,7 +29,7 @@
     data(){
       return {
         title: 'OverviewMap',
-        stations:[]
+        stations: []
       }
     },
     mounted(){
@@ -54,13 +53,14 @@
     margin:0 auto
   }
 
-  .components-container{
-    line-height: 300%;
+  .component-container{
+    line-height: 500%;
   }
 
-  .col-md-4{
-    line-height: 250%;
-    margin-left: 9%;
+  .picker-container{
+    float: left;
+    margin-left: 10%;
+    margin-top: 1%;
   }
 
 </style>

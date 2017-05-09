@@ -57,11 +57,13 @@ function readStationRecord(callback){
 
 
 // Added by Qing Du (q.du@ust.hk)
-function readPeopleCount(day, time){
+function readPeopleCount(day, time, callback){
   const url = `${dataServerUrl}/getPeopleCount`
-  $http.get(url, {'day': day, 'time': time}, function(tuple) {
-    return tuple;
-  });
+  $http.get(url, {'day': day, 'time': time}).then(response => {
+    callback(response.data)
+  }, errResponse => {
+    console.log(errResponse)
+  })
 }
 
 export default{
