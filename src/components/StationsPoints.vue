@@ -23,7 +23,6 @@
     mounted(){
       let _this = this;
       this.stationId = this.$el.id;
-      console.log('stationObj', this.stationObj);
       pipeService.onDatetimeSelected(function(datetime){
         var dt = new Date(datetime);
         var hour = dt.getHours();
