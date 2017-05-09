@@ -99,7 +99,7 @@ var pipeService = new Vue({
       })
     },
     emitDateSelected: function(msg){
-      this.$emti(this.DATETIMESELECTED, msg)
+      this.$emit(this.DATETIMESELECTED, msg)
     }
 
   }

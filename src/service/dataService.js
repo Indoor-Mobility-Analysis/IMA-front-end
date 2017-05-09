@@ -53,6 +53,14 @@ function readPeopleCount(day, time){
     return tuple;
   });
 }
+function readStationRecord(callback){
+  const url = `${dataServerUrl}/getStationRecord`
+  $http.post(url).then(response => {
+    callback(response.data)
+  }, errResponse => {
+    console.log(errResponse)
+  })
+}
 
 export default{
   readMap,

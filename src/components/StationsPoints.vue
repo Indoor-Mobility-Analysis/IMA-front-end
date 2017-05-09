@@ -10,7 +10,7 @@
         data(){
             return {
                 title: 'Station Point Component',
-                stationID: id,
+                stationID: null,
                 date: null,
                 time: null,
                 count: null,
@@ -20,13 +20,16 @@
         },
         mounted(){
             let _this = this;
+            this.stationId = this.$el.id;
+            console.log('$el', this.$el.id);
             pipeService.onDatetimeSelected(function(datetime){
                 var dt = new Date(datetime);
                 var hour = dt.getHours();
                 var minu = dt.getMinutes();
+
                 _this.date = dt.getDay();
                 _this.time = (hour - 8) * 12 + Math.floor(minu / 5);
-                tup = dataService.readPeopleCount(station_id, day, time);
+                tup = dataService.readPeopleCount(_this.stationId, day, time);
                 _this.count = tup[1];
                 _this.max = tup[0];
 
