@@ -13,7 +13,8 @@ var pipeService = new Vue({
     RECORDREADY: 'record_ready',
     REGIONBRUSHED: 'region_brushed',
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
-    RENDERFRAME: 'render_frame'
+    RENDERFRAME: 'render_frame',
+    FRESHPLAYER: 'fresh_player'
   },
 
   methods:{
@@ -86,6 +87,16 @@ var pipeService = new Vue({
     },
     onRenderOneFrame: function(callback){
       this.$on(this.RENDERFRAME,function(msg){
+        callback(msg);
+      })
+    },
+
+    //    // Render on frame/ per seconds
+    emitFreshPlayer: function(msg){
+      this.$emit(this.FRESHPLAYER, msg);
+    },
+    onFreshPlayer: function(callback){
+      this.$on(this.FRESHPLAYER,function(msg){
         callback(msg);
       })
     },
