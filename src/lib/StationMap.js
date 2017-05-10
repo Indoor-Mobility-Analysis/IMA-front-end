@@ -30,14 +30,13 @@ let StationMap = function(el, maps){
 
   this.offsetX = undefined;
   this.offsetY = 0;
-
-
 };
 
 StationMap.prototype.setMap = function(mapObj){
   this.layerId = mapObj['floor'];
   this.stationId = mapObj['stationId'];
   this.map = mapObj['map'];
+  this.transform = {k: 1, x: 0, y:0};
   this.initContainer();
   this.renderMap();
   this.initHeatmapContainer();
@@ -67,8 +66,8 @@ StationMap.prototype.initContainer = function(){
     .style('border-width', '0.1px')
     .style('border-opacity', 0.3)
 
-  console.log('this.$el: ', this.$el);
-  console.log('this.divContainer : ', this.divContainer.node());
+  // console.log('this.$el: ', this.$el);
+  // console.log('this.divContainer : ', this.divContainer.node());
 
 
   // to make the svg and canvas have same height and width, we use this.height, and this.width.
@@ -77,12 +76,8 @@ StationMap.prototype.initContainer = function(){
     .attr('class', 'navmapcontainer')
     .attr('height', this.height)
     .attr('width', this.width)
+
   this.rootContainer = this.svg.append('g').attr('class', 'rootContainer');
-  // .style('margin-top', this.margin['top'])
-  // .style('border-style', 'dashed')
-  // .style('border-color','#777')
-  // .style('border-width', 0.1)
-  // .style('border-opacity', 0.3)
 
   var largestX = 0;
   var largestY = 0;
@@ -112,7 +107,7 @@ StationMap.prototype.initContainer = function(){
 StationMap.prototype.renderMap = function(){
   let _this = this;
 
-  console.log('this.mapAttr', this.mapAttr);
+  // console.log('this.mapAttr', this.mapAttr);
 
   var largestX = this.mapAttr['largestX'];
   var smallestX = this.mapAttr['smallestX'];
@@ -180,6 +175,9 @@ StationMap.prototype.renderMap = function(){
 
   function zoomed() {
     _this.rootContainer.attr("transform", d3.event.transform);
+    _this.transform = d3.event.transform;
+    _this.clearHeatmapCanvas();
+    // console.log('d3.event.transform: ', d3.event.transform);
   }
 
   // var drag = d3.behavior.drag()
@@ -218,7 +216,7 @@ StationMap.prototype.renderMap = function(){
 
 StationMap.prototype.setLegend = function(legendConfig){
 
-  console.log('in stationmap, lengendConfig: ', legendConfig);
+  // console.log('in stationmap, lengendConfig: ', legendConfig);
 
   let _this = this;
   this.legendConfig = legendConfig;
@@ -246,7 +244,6 @@ StationMap.prototype.setLegend = function(legendConfig){
     })
     .on('mouseover', function(d){
       console.log('over', d['pos'][0],d['pos'][1]);
-
     })
 };
 
@@ -272,22 +269,34 @@ StationMap.prototype.initHeatmapContainer = function(){
 StationMap.prototype.updateHeatmapCanvas = function(frameData) {
   let record = frameData[this.layerId];
   let points = [];
+
   // let max = 0
   for (let pointIdx in record['small_clusters']) {
     let temp = {
-      x: Math.round(this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX),
-      y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])),
-      value: record['small_clusters'][pointIdx][4]
+      x: Math.round((this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX)*this.transform.k+this.transform.x),
+      y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])*this.transform.k+this.transform.y),
+      value: record['small_clusters'][pointIdx][4],
+      radius: 10*this.transform.k
     }
     // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
     // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
     points.push(temp)
   }
+
+  // let nuConfig = {
+  //   radius: 30*this.transform.k,
+  //   maxOpacity: 0.5,
+  //   minOpacity: 0,
+  //   blur: 0.75
+  // };
+
+  // this.heatmapInstance.configure(nuConfig)
+
   // heatmap data format
   let data = {
     max: 1,
     data: points
-  }
+  };
   // if you have a set of data points always use setData instead of addData
   // for data initialization
   this.heatmapInstance.setData(data)
@@ -302,16 +311,16 @@ StationMap.prototype.clearHeatmapCanvas = function() {
 StationMap.prototype.updateBubblemap = function(frameData){
   let _this = this;
   // need to parser renderData
-  console.log('layerId: ', _this.layerId);
-  console.log('updateBubblemap: ', frameData);
+  // console.log('layerId: ', _this.layerId);
+  // console.log('updateBubblemap: ', frameData);
   let bubblesData = frameData[_this.layerId]['small_clusters'];
-  console.log('bubblesData: ', bubblesData);
+  // console.log('bubblesData: ', bubblesData);
   let bubbles = _this.bubbleContainer.selectAll('circle').data(bubblesData, function(d) {return d[0]+'_'+d[1];})
 
   bubbles
     .transition()
     .attr('r', function(d){
-      return 10;})
+      return 15;})
     .text(function(d) {
       return 'density: '+d[4];
     })
@@ -333,7 +342,7 @@ StationMap.prototype.updateBubblemap = function(frameData){
       return _this.yScale(d[1]);
     })
     .attr('r', function(d) {
-      return 10;})
+      return 15;})
     .attr('fill', function(d) {
       return 'blue';
     })
