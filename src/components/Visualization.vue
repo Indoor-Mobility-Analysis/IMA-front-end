@@ -9,7 +9,7 @@
       </el-dropdown-menu>
     </el-dropdown>
 
-    <el-tabs type="border-card">
+    <el-tabs type="border-card" @tab-click="handleClick">
       <el-tab-pane style="height: 100%">
         <span slot="label"><i class="el-icon-date"></i> Map</span>
         <StationMap  style="height: 100%"></StationMap>
@@ -18,9 +18,9 @@
         <span slot="label"><i class="el-icon-date"></i> Ticket</span>
         Ticket
       </el-tab-pane>
-      <el-tab-pane label="Trend">
-        <span slot="label"><i class="el-icon-date"></i> Trend</span>
-        Trend
+      <el-tab-pane label="Trend" style="height: 100%">
+        <span id="trendTab" slot="label"><i class="el-icon-date"></i> Trend</span>
+        <StationTrend  style="height: 100%"></StationTrend>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -30,6 +30,7 @@
   import pipeService from '../service/pipeService'
   import dataService from '../service/dataService'
   import StationMap from './VisualizationComponents/StationMap.vue'
+  import StationTrend from './VisualizationComponents/StationTrend.vue'
   export default {
     name: 'Visualization',
     data(){
@@ -41,7 +42,8 @@
         records: {},
         currentRecord:{next: undefined},
         lastRecord: null,
-        lastTime: 0
+        lastTime: 0,
+        trendTabFlag: 1
       }
     },
     mounted(){
@@ -63,9 +65,19 @@
       })
     },
     components:{
-      StationMap
+      StationMap,
+      StationTrend
     },
     methods:{
+      handleClick(tab, event) {
+        console.log(tab, event);
+        console.log('tab: ', tab.label);
+        if(tab.label == 'Trend' && this.trendTabFlag==1) {
+          pipeService.emitTrendTabClicked(this.trendTabFlag);
+          this.trendTabFlag = 0;
+        }
+      },
+
       selectOneStation(key){
         pipeService.emitStationSelected(key);
       },
