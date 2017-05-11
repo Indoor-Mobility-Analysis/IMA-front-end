@@ -91,7 +91,8 @@ var pipeService = new Vue({
       })
     },
 
-    //Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
+
+    // Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
     emitDatetimeSelected: function(msg){
       this.$emit(this.DATETIMESELECTED, msg);
     },
