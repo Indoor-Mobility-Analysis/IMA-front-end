@@ -1,18 +1,18 @@
 <template>
   <div class="video-analysis-container">
-   <div class = "wrapper">
+    <div class = "wrapper">
       <div class ="nav-logo">
-         <icon class = "logo" name="play-circle" scale = "2" color="#fff"></icon>
+        <icon class = "logo" name="play-circle" scale = "2" color="#fff"></icon>
       </div>
-       <div class = "nav-selection">
-           <p>{{title}}</p>
-       </div>
-   </div>
+      <div class = "nav-selection">
+        <p>{{title}}</p>
+      </div>
+    </div>
     <div class = "video-player-1">
-       <video-player  ref="videoPlayer" :options="playerOptions"></video-player>
+      <video-player  ref="videoPlayer" :options="playerOptions"></video-player>
     </div>
     <div class = "video-player-2">
-       <video-player ref="videoPlayer" :options="playerOptions2"></video-player>
+      <video-player ref="videoPlayer" :options="playerOptions2"></video-player>
     </div>
     <div class ="video-player-3">
       <video-player ref="videoPlayer" :options="playerOptions3"></video-player>
@@ -23,96 +23,102 @@
 
 <script>
   import bus from "../assets/eventBus";
+  import pipeService from "../service/pipeService";
+
   export default {
     name: 'VideoAnalysis',
     data(){
       return {
-           title:'Video Analysis',
-           playerOptions: {
-                start: 0,
-                playsinline: false,
-                muted: true,
-                language: 'en',
-                height:150,
-                autoplay:true,
-                playbackRates: [0.7, 1.0, 1.5, 2.0],
-                sources: [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }],
-           },
-           playerOptions2:{
-               start:0,
-               playsinline:false,
-               muted:true,
-               language:'en',
-               playbackRates:[0.7, 1.0, 1.5, 2.0],
-               height:150,
-               autoplay:true,
-               sources: [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }],
-           },
-           playerOptions3:{
-               start:0,
-               playsinline:false,
-               muted:true,
-               language:'en',
-               playbackRates:[0.7, 1.0, 1.5, 2.0],
-               height:152,
-               autoplay:true,
-               sources: [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }],
-           }
+        title:'Video Analysis',
+        playerOptions: {
+          start: 0,
+          playsinline: false,
+          muted: true,
+          language: 'en',
+          height:150,
+          autoplay:true,
+          playbackRates: [0.7, 1.0, 1.5, 2.0],
+          sources: [{
+            type: "video/mp4",
+            src: "/static/video/sample.mp4"
+          }],
+        },
+        playerOptions2:{
+          start:0,
+          playsinline:false,
+          muted:true,
+          language:'en',
+          playbackRates:[0.7, 1.0, 1.5, 2.0],
+          height:150,
+          autoplay:true,
+          sources: [{
+            type: "video/mp4",
+            src: "/static/video/sample.mp4"
+          }],
+        },
+        playerOptions3:{
+          start:0,
+          playsinline:false,
+          muted:true,
+          language:'en',
+          playbackRates:[0.7, 1.0, 1.5, 2.0],
+          height:152,
+          autoplay:true,
+          sources: [{
+            type: "video/mp4",
+            src: "/static/video/sample.mp4"
+          }],
+        }
       }
     },
     mounted(player){
-        var self = this;
-        bus.$on("event1",function(){
-            self.playerOptions.sources = [{
-                  type: "video/mp4",
-                  src: "/static/video/motion.mp4"
-                }];
-            self.playerOptions2.sources = [{
-                  type: "video/mp4",
-                  src: "/static/video/motion.mp4"
-                }];
-            self.playerOptions3.sources  = [{
-                  type: "video/mp4",
-                  src: "/static/video/motion.mp4"
-                }];
-        });
-        bus.$on("event2",function(){
-           self.playerOptions.sources = [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }];
-            self.playerOptions2.sources = [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }];
-            self.playerOptions3.sources  = [{
-                  type: "video/mp4",
-                  src: "/static/video/sample.mp4"
-                }];
-        });
-        bus.$on("event3",function(){
-           self.playerOptions.sources = [{
-                  type: "video/mp4",
-                  src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
-                }];
-             self.playerOptions2.sources = [{
-                  type: "video/mp4",
-                  src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
-                }];
-              self.playerOptions3.sources  = [{
-                  type: "video/mp4",
-                  src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
-                }];
+      var self = this;
+      bus.$on("event1",function(){
+        self.playerOptions.sources = [{
+          type: "video/mp4",
+          src: "/static/video/motion.mp4"
+        }];
+        self.playerOptions2.sources = [{
+          type: "video/mp4",
+          src: "/static/video/motion.mp4"
+        }];
+        self.playerOptions3.sources  = [{
+          type: "video/mp4",
+          src: "/static/video/motion.mp4"
+        }];
       });
+      bus.$on("event2",function(){
+        self.playerOptions.sources = [{
+          type: "video/mp4",
+          src: "/static/video/sample.mp4"
+        }];
+        self.playerOptions2.sources = [{
+          type: "video/mp4",
+          src: "/static/video/sample.mp4"
+        }];
+        self.playerOptions3.sources  = [{
+          type: "video/mp4",
+          src: "/static/video/sample.mp4"
+        }];
+      });
+      bus.$on("event3",function(){
+        self.playerOptions.sources = [{
+          type: "video/mp4",
+          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+        }];
+        self.playerOptions2.sources = [{
+          type: "video/mp4",
+          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+        }];
+        self.playerOptions3.sources  = [{
+          type: "video/mp4",
+          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+        }];
+      });
+
+      pipeService.onFreshPlayer(function(timestampe){
+
+      })
     }
   }
 </script>
@@ -127,7 +133,7 @@
     background-color:#9CC;
     height:40px;
   }
-   .nav-logo{
+  .nav-logo{
     height:50px;
   }
   .nav-selection{
