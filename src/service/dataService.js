@@ -46,12 +46,24 @@ function readRecordWithTimeRange(mapId, startTime, timeRange , callback){
   })
 }
 
+// For new features
+function readStationRecord(callback){
+  const url = `${dataServerUrl}/getStationRecord`
+  $http.get(url).then(response => {
+    callback(response.data)
+  }, errResponse => {
+    console.log(errResponse)
+  })
+}
+
 // Added by Qing Du (q.du@ust.hk)
-function readPeopleCount(day, time){
-  const url = `${dataServerUrl}/getPeopleCount`
-  $http.get(url, {'day': day, 'time': time}, function(tuple) {
-    return tuple;
-  });
+function readPeopleCount(day, time, callback){
+    const url = `${dataServerUrl}/getPeopleCount`
+    $http.post(url, {'day': day, 'time': time}).then(response => {
+        callback(response.data)
+    }, errResponse => {
+        console.log(errResponse)
+    })
 }
 
 export default{

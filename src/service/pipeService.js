@@ -15,7 +15,7 @@ var pipeService = new Vue({
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
     RENDERFRAME: 'render_frame',
 
-    DATETIMESELECTED: 'datetime_selected'
+    DATETIMESELECTED: 'datetime_selected',
 
     FRESHPLAYER: 'fresh_player'
 
@@ -95,16 +95,16 @@ var pipeService = new Vue({
       })
     },
 
- 
-    //Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
+
+    // Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
+    emitDatetimeSelected: function(msg){
+      this.$emit(this.DATETIMESELECTED, msg);
+    },
     onDatetimeSelected: function(callback){
       this.$on(this.DATETIMESELECTED, function(msg){
         callback(msg)
       })
     },
-    emitDateSelected: function(msg){
-      this.$emti(this.DATETIMESELECTED, msg)
-    }
 
     // Render on frame/ per seconds
     emitFreshPlayer: function(msg){
