@@ -14,8 +14,9 @@ var pipeService = new Vue({
     REGIONBRUSHED: 'region_brushed',
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
     RENDERFRAME: 'render_frame',
-    FRESHPLAYER: 'fresh_player',
-    TRENDTABCLICKED: 'trend_tab_clicked'
+    TRENDTABCLICKED: 'trend_tab_clicked',
+    DATETIMESELECTED: 'datetime_selected',
+    FRESHPLAYER: 'fresh_player'
   },
 
   methods:{
@@ -92,7 +93,18 @@ var pipeService = new Vue({
       })
     },
 
-    //    // Render on frame/ per seconds
+ 
+    //Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
+    onDatetimeSelected: function(callback){
+      this.$on(this.DATETIMESELECTED, function(msg){
+        callback(msg)
+      })
+    },
+    emitDateSelected: function(msg){
+      this.$emti(this.DATETIMESELECTED, msg)
+    },
+
+    // Render on frame/ per seconds
     emitFreshPlayer: function(msg){
       this.$emit(this.FRESHPLAYER, msg);
     },
