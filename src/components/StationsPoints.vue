@@ -4,14 +4,13 @@
 		 				top: stationObj.top,
 		 				height: stationObj.height, 
 		 				width: stationObj.width,
-		 				background-color: color,
-		 				box-shadow: shadow}">
+		 				'background-color': color,
+		 				'box-shadow': shadow}">
 	</div>
 </template>
 
 <script>
 	import pipeService from '../service/pipeService';
-	import dataService from '../service/dataService';
 	export default {
 		name: 'station',
 		props:['stationObj'],
@@ -19,43 +18,36 @@
 			return {
 				title: 'Station Point Component',
 				stationId: null,
-				day: null,
-				time: null,
 				count: null,
-				color: null,
-				shadow: null,
 				max: null,
+				color: null,
+				shadow: null
 
 			}
 		},
 		mounted(){
 			let _this = this;
 			this.stationId = this.$el.id;
-			pipeService.onDatetimeSelected(function(datetime){
-				var dt = new Date(datetime);
-				var hour = dt.getHours();
-				var minu = dt.getMinutes();
-
-				_this.day = dt.getDay();
-				_this.time = (hour - 8) * 12 + Math.floor(minu / 5);
-				var tup = dataService.readPeopleCount(_this.stationId, _this.day, _this.time);
-				_this.count = tup[1];
-				_this.max = tup[0];
+			pipeService.onDatetimeSelected(function(msg){
+				_this.max = msg['max_count'];
+				_this.count = msg[_this.stationId];
 
 				var rrr = new Color(218, 4, 0),
-				ggg = new Color(57, 157, 53),
-				yyy = new Color(209, 127, 32);
+					ggg = new Color(57, 157, 53),
+					yyy = new Color(209, 127, 32);
 
 				if (_this.count > _this.max / 2) {
 					start = yyy,
 					end = rrr;
 				}
 				var startColors = start.getColors(),
-				endColors = end.getColors();
-				var r = Interpolate(startColors.r, endColors.r, 50, _this.count);
-				var g = Interpolate(startColors.g, endColors.g, 50, _this.count);
-				var b = Interpolate(startColors.b, endColors.b, 50, _this.count);
-				console.log('run here', datetime);
+					endColors = end.getColors();
+				var r = Interpolate(startColors.r, endColors.r, 50, _this.count),
+					g = Interpolate(startColors.g, endColors.g, 50, _this.count),
+					b = Interpolate(startColors.b, endColors.b, 50, _this.count);
+
+				_this.color = "rgba(" + r + ", " + g + ", " + b + ", 0.4";
+				_this.shadow = "0px 0px 10px 5px rgba(" + r + ", " + g + ", " + b + ", 0.4";
 			})
 		},
 		methods: {
@@ -87,7 +79,7 @@
 	}
 </script>
 
-<style>
+<style scope>
 	.station{
 		cursor: pointer;
 		position: absolute;

@@ -5,10 +5,8 @@
       <div class="map-container">
         <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/>
         <StationPoints v-for="station in stations" v-bind:stationObj="station" v-bind:key="station.stationId"></StationPoints>
+        <datetimepicker class="picker"></datetimepicker>
       </div>
-    </div>
-    <div class="picker-container">
-      <datetimepicker></datetimepicker>
     </div>
   </div>
 
@@ -29,7 +27,9 @@
     data(){
       return {
         title: 'OverviewMap',
-        stations: []
+        stations: [],
+        maxCount: null,
+        pointStyles: []
       }
     },
     mounted(){
@@ -41,7 +41,7 @@
   }
 </script>
 
-<style>
+<style scope>
   .overview-map-container{
     background-color: #4fb699;
     /*height: 100%*/
@@ -50,6 +50,7 @@
   .map-container{
     position: relative;
     width: 80%;
+    height: auto;
     margin:0 auto
   }
 
@@ -57,10 +58,8 @@
     line-height: 500%;
   }
 
-  .picker-container{
+  .picker{
     float: left;
-    margin-left: 10%;
-    margin-top: 1%;
   }
 
 </style>

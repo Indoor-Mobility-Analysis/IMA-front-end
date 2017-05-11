@@ -10,47 +10,18 @@ http://element.eleme.io/#/en-US/component/datetime-picker
         type="datetime"
         placeholder="Select date and time"
         :picker-options="pickerOptions1"
-        v-on:input="updatePicked($event.value)">
+        v-on:change="updateStyles">
     </el-date-picker>
 </div>
 </template>
 
 <script>
-    // var $ = window.jQuery = require('jquery')
-    // import moment from 'moment'
-    // import eonosdandatetimepicker from 'eonasdan-bootstrap-datetimepicker'
     import pipeService from '../service/pipeService';
     import dataService from '../service/dataService';
-    // export default {
-    //     name: 'datetimepicker',
-    //     data () {
-    //         return {
-    //             value: ''
-    //         }
-    //     },
-    //     watch: {
-    //         options: function (options) {
-    //             $(this.$el).datetimepicker({ data: options })
-    //         }
-    //     },
-    //     mounted: function () {
-    //         var vm = this
-    //         var mycomp = $(this.$el).datetimepicker({})
-    //         mycomp.on('dp.change', function (e) {
-    //             vm.value = e.date
-
-    //             vm.$emit('change', vm.value);
-    //             pipeService.emitDateSelected(vm.value);
-
-    //         })
-    //     },
-    //     destroyed: function () {
-    //         $(this.$el).off().datetimepicker('destroy')
-    //     }
-    // }
 
     export default {
         data() {
+            let _this = this
             return {
                 pickerOptions1: {
                     shortcuts: [{
@@ -75,18 +46,24 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                     }]
                 },
                 value1: '',
-                value2: ''
+                value2: '',
+                stationCounts: []
             };
         },
         methods: {
-            updatePicked: function(value){
-                console.log(typeof value);
-                pipeService.emitDatetimeSelected(value)
+            updateStyles: function(){
+                var dt = this.value2;
+                var hour = dt.getHours();
+                var minu = dt.getMinutes();
+                var day = dt.getDay();
+                var time = (hour - 8) * 12 + Math.floor(minu / 5);
+                this.stationCounts = dataService.readPeopleCount(day, time);
+                pipeService.emitDatetimeSelected(this.stationCounts);
             }
         }
     };
 </script>
 
-<style>
+<style scope>
 
 </style>

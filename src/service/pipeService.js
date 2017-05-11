@@ -93,8 +93,7 @@ var pipeService = new Vue({
 
     //Once a datatime is selected (Added by Qing Du (q.du@ust.hk))
     emitDatetimeSelected: function(msg){
-      console.log(msg)
-      this.$emit(this.DATETIMESELECTED, msg)
+      this.$emit(this.DATETIMESELECTED, msg);
     },
     onDatetimeSelected: function(callback){
       this.$on(this.DATETIMESELECTED, function(msg){
