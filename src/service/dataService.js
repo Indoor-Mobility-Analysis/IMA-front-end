@@ -71,5 +71,6 @@ export default{
   test,
   rendLegendConfiguration,
   readRecordWithTimeRange,
+  readStationRecord,
   readPeopleCount
 }

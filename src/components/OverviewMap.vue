@@ -28,17 +28,16 @@
       return {
         title: 'OverviewMap',
         stations: [],
-        maxCount: null,
-        pointStyles: []
       }
     },
-    mounted(){
+    mounted(){ 
       let _this = this;
       dataService.readStationRecord(function(stationRecords){
         _this.stations = stationRecords;
+        // console.log(stationRecords)
       })
     }
-  }
+  };
 </script>
 
 <style scope>

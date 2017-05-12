@@ -50,6 +50,9 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                 stationCounts: null
             };
         },
+        mounted(){
+            this.value2 = new Date();
+        },
         methods: {
             updateStyles: function(){
                 var dt = this.value2;
@@ -57,9 +60,12 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                 var minu = dt.getMinutes();
                 var day = dt.getDay();
                 var time = (hour - 8) * 12 + Math.floor(minu / 5);
-                this.stationCounts = dataService.readPeopleCount(day, time);
+                let _this = this;
+                dataService.readPeopleCount(day, time, function(data){
+                    _this.stationCounts = data.valueOf();
+                    // console.log(_this.stationCounts)
+                })
                 pipeService.emitDatetimeSelected(this.stationCounts);
-                // console.log(this.stationCounts);
             }
         }
     };
