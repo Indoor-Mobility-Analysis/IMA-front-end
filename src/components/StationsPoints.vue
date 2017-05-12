@@ -4,8 +4,8 @@
 		 				top: stationObj.top, 
 		 				height: stationObj.height, 
 		 				width: stationObj.width,
-		 				'background-color': color,
-		 				'box-shadow': shadow}"
+		 				'background-color': backgroundColor,
+		 				'box-shadow': boxShadow}"
 	>
 	</div>
 </template>
@@ -22,20 +22,20 @@
 				stationId: null,
 				count: null,
 				max: null,
-				color: null,
-				shadow: null,
-				colorVal: null
+				backgroundColor: null,
+				boxShadow: null,
+				colorVal: null,
 
 			}
 		},
 		mounted(){
 			let _this = this;
-			// this.stationId = this.$el.id;
-			console.log('AAAAA', _this.stationId);
+			this.stationId = this.$el.id;
 			pipeService.onDatetimeSelected(function(msg){
 				_this.max = msg['max_count'];
 				_this.count = msg[_this.stationId];
 				_this.colorVal = 100 * _this.count / _this.max
+				var step = 100;
 
 	            var red = new Color(218, 4, 0),
 		            yellow = new Color(209, 127, 32),
@@ -59,12 +59,12 @@
 				    return Math.floor(final);
 				}
 
-		        var r = Interpolate(startColors.r, endColors.r, 50, _this.colorVal);
-		        var g = Interpolate(startColors.g, endColors.g, 50, _this.colorVal);
-		        var b = Interpolate(startColors.b, endColors.b, 50, _this.colorVal);
+		        var r = Interpolate(startColors.r, endColors.r, step, _this.colorVal);
+		        var g = Interpolate(startColors.g, endColors.g, step, _this.colorVal);
+		        var b = Interpolate(startColors.b, endColors.b, step, _this.colorVal);
 
-				_this.color = "rgba(" + r + ", " + g + ", " + b + ", 0.4";
-				_this.shadow = "0px 0px 10px 5px rgba(" + r + ", " + g + ", " + b + ", 0.4";
+				_this.backgroundColor = "rgba(" + r + ", " + g + ", " + b + ", 0.4)";
+				_this.boxShadow = "0px 0px 10px 5px rgba(" + r + ", " + g + ", " + b + ", 0.6)";
 			})
 		}
 	}

@@ -4,7 +4,7 @@
     <div class="component-container">
       <div class="map-container">
         <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/>
-        <StationPoints v-for="station in stations" v-bind:stationObj="station" v-bind:key="station.stationId"></StationPoints>
+        <StationPoints v-for="station in stations" v-bind:stationObj="station" v-bind:key="station.StationId" v-bind:id="station.StationId"></StationPoints>
         <datetimepicker class="picker"></datetimepicker>
       </div>
     </div>
@@ -34,7 +34,6 @@
       let _this = this;
       dataService.readStationRecord(function(stationRecords){
         _this.stations = stationRecords;
-        // console.log(stationRecords)
       })
     }
   };
