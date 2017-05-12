@@ -49,7 +49,7 @@
 
   .map-container{
     position: relative;
-    width: 80%;
+    width: 60%;
     height: auto;
     margin:0 auto
   }

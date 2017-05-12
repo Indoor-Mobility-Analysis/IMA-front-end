@@ -47,7 +47,7 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                 },
                 value1: '',
                 value2: '',
-                stationCounts: 'aaa'
+                stationCounts: null
             };
         },
         methods: {
@@ -59,6 +59,7 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                 var time = (hour - 8) * 12 + Math.floor(minu / 5);
                 this.stationCounts = dataService.readPeopleCount(day, time);
                 pipeService.emitDatetimeSelected(this.stationCounts);
+                // console.log(this.stationCounts);
             }
         }
     };
