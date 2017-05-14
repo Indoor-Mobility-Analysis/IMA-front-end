@@ -9,10 +9,9 @@ http://element.eleme.io/#/en-US/component/datetime-picker
         v-model="value2"
         type="datetime"
         placeholder="Select date and time"
-        :picker-options="pickerOptions1"
-        >
-    </el-date-picker>
-</div>
+        :picker-options="pickerOptions1">
+        </el-date-picker>
+    </div>
 </template>
 
 <script>
@@ -64,16 +63,6 @@ http://element.eleme.io/#/en-US/component/datetime-picker
         },
         mounted(){
             this.value2 = new Date();
-            var dt = this.value2;
-            var hour = dt.getHours();
-            var minu = dt.getMinutes();
-            var day = dt.getDay();
-            var time = (hour - 8) * 12 + Math.floor(minu / 5);
-            let _this = this;
-            dataService.readPeopleCount(day, time, function(data){
-                pipeService.emitDatetimeSelected(data);
-            })
-            
         }
     };
 </script>
