@@ -16,7 +16,6 @@ var pipeService = new Vue({
     RENDERFRAME: 'render_frame',
 
     DATETIMESELECTED: 'datetime_selected',
-    RETURNEDSTATIONID: 'stationid_returned',
 
     FRESHPLAYER: 'fresh_player'
 
@@ -93,16 +92,6 @@ var pipeService = new Vue({
     onRenderOneFrame: function(callback){
       this.$on(this.RENDERFRAME,function(msg){
         callback(msg);
-      })
-    },
-
-    // Return station ID from read csv file
-    emitReturnedStationId: function(msg){
-      this.$emit(this.RETURNEDSTATIONID, msg);
-    },
-    onReturnedStationId: function(callback){
-      this.$on(this.RETURNEDSTATIONID, function(msg){
-        callback(msg)
       })
     },
 

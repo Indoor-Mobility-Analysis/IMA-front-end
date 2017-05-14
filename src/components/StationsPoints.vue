@@ -35,7 +35,7 @@
 				_this.max = msg['max_count'];
 				_this.count = msg[_this.stationId];
 				_this.colorVal = 100 * _this.count / _this.max
-				var step = 100;
+				var step = 20;
 
 	            var red = new Color(218, 4, 0),
 		            yellow = new Color(209, 127, 32),

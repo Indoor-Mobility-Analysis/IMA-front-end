@@ -10,7 +10,7 @@ http://element.eleme.io/#/en-US/component/datetime-picker
         type="datetime"
         placeholder="Select date and time"
         :picker-options="pickerOptions1"
-        v-on:change="updateStyles">
+        >
     </el-date-picker>
 </div>
 </template>
@@ -46,15 +46,11 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                     }]
                 },
                 value1: '',
-                value2: '',
-                stationCounts: null
+                value2: ''
             };
         },
-        mounted(){
-            this.value2 = new Date();
-        },
-        methods: {
-            updateStyles: function(){
+        watch: {
+            value2: function(){
                 var dt = this.value2;
                 var hour = dt.getHours();
                 var minu = dt.getMinutes();
@@ -62,11 +58,22 @@ http://element.eleme.io/#/en-US/component/datetime-picker
                 var time = (hour - 8) * 12 + Math.floor(minu / 5);
                 let _this = this;
                 dataService.readPeopleCount(day, time, function(data){
-                    _this.stationCounts = data.valueOf();
-                    // console.log(_this.stationCounts)
+                    pipeService.emitDatetimeSelected(data);
                 })
-                pipeService.emitDatetimeSelected(this.stationCounts);
             }
+        },
+        mounted(){
+            this.value2 = new Date();
+            var dt = this.value2;
+            var hour = dt.getHours();
+            var minu = dt.getMinutes();
+            var day = dt.getDay();
+            var time = (hour - 8) * 12 + Math.floor(minu / 5);
+            let _this = this;
+            dataService.readPeopleCount(day, time, function(data){
+                pipeService.emitDatetimeSelected(data);
+            })
+            
         }
     };
 </script>
