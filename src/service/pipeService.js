@@ -15,10 +15,14 @@ var pipeService = new Vue({
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
     RENDERFRAME: 'render_frame',
 
+
     DATETIMESELECTED: 'datetime_selected',
 
-    FRESHPLAYER: 'fresh_player'
 
+    TRENDTABCLICKED: 'trend_tab_clicked',
+
+
+    FRESHPLAYER: 'fresh_player'
   },
 
   methods:{
@@ -111,6 +115,16 @@ var pipeService = new Vue({
       this.$emit(this.FRESHPLAYER, msg);
     },
     onFreshPlayer: function(callback){
+      this.$on(this.FRESHPLAYER,function(msg){
+        callback(msg);
+      })
+    },
+
+     //    // Render on frame/ per seconds
+    emitTrendTabClicked: function(msg){
+      this.$emit(this.FRESHPLAYER, msg);
+    },
+    onTrendTabClicked: function(callback){
       this.$on(this.FRESHPLAYER,function(msg){
         callback(msg);
       })

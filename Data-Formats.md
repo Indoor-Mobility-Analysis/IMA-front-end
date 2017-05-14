@@ -7,3 +7,9 @@
 * count: float, the estimated number of people in the station at *day*, *time*.
 ***
 **people_activity**: to store people's activity such as coordinates, flow
+* _id: ObjectId
+* time_stamp: int32
+* floor: int32
+* map_data: [int32, int32, int32, double, double]
+* big_clusters: [int32, int32, double, double, double, int32]
+* small_clusters: [int32, int32, double, double, int32]
