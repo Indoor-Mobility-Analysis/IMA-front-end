@@ -1,22 +1,27 @@
 <template>
-  <div class="station"
-       v-bind:style="{left: stationObj.left,
+  <div><a >
+    <div v-on:click="clickPoint"
+         class="station"
+         v-bind:style="{left: stationObj.left,
 		 				top: stationObj.top,
 		 				height: stationObj.height,
 		 				width: stationObj.width,
 		 				'background-color': backgroundColor,
-		 				'box-shadow': boxShadow}"
-  >
+		 				'box-shadow': boxShadow}">
+    </div></a>
   </div>
 </template>
 
 <script>
   import pipeService from '../service/pipeService';
   import Color from '../lib/Color';
+  import TWEEN from 'tween'
+  import jquery from 'jquery'
   export default {
     name: 'station',
     props:['stationObj'],
     data(){
+//        //href="#analysisview"
       return {
         title: 'Station Point Component',
         stationId: null,
@@ -25,7 +30,7 @@
         backgroundColor: null,
         boxShadow: null,
         colorVal: null,
-
+        tweeningValue: 0
       }
     },
     mounted(){
@@ -66,6 +71,20 @@
         _this.backgroundColor = "rgba(" + r + ", " + g + ", " + b + ", 0.4)";
         _this.boxShadow = "0px 0px 10px 5px rgba(" + r + ", " + g + ", " + b + ", 0.6)";
       })
+    },
+    methods:{
+      clickPoint(){
+
+        console.log('height', window);
+        jquery('html, body').stop().animate({
+          scrollTop:jquery(jquery('#analysisview')).offset().top
+        }, 500, 'swing');
+      }
+    },
+    watch:{
+      tweeningValue(d){
+        console.log('dx', d)
+      }
     }
   }
 </script>

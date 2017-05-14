@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <OverviewMap class="top-container"></OverviewMap>
-    <section class="middle-container">
+    <section id="analysisview" class="middle-container">
       <StationSelection class="middle-left"></StationSelection>
       <VideoAnalysis class="middle-middle"></VideoAnalysis>
       <Visualization class="middle-right"></Visualization>
@@ -58,7 +58,7 @@
   .middle-container{
     margin-top: 10px;
     width: 80%;
-    height: 85%;
+    height: 90%;
     display: inline-block
   }
   .middle-left{
