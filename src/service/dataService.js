@@ -46,9 +46,18 @@ function readRecordWithTimeRange(mapId, startTime, timeRange , callback){
   })
 }
 
+// Added by Qing Du (q.du@ust.hk)
+function readPeopleCount(day, time){
+  const url = `${dataServerUrl}/getPeopleCount`
+  $http.get(url, {'day': day, 'time': time}, function(tuple) {
+    return tuple;
+  });
+}
+
 export default{
   readMap,
   test,
   rendLegendConfiguration,
-  readRecordWithTimeRange
+  readRecordWithTimeRange,
+  readPeopleCount
 }
