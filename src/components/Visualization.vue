@@ -88,7 +88,7 @@
         let timeGap = 5000;
 
         setInterval(function(){
-          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
+//          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
           if(_this.currentRecord['next']){
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
@@ -156,7 +156,7 @@
   .el-tabs__content{
     height: 90%;
   }
-  
+
   .el-tabs--border-card{
     height: calc(100% - 23px);
   }
