@@ -1,14 +1,5 @@
 <template>
   <div class="visualization-container">
-    <el-dropdown @command="selectOneStation" >
-        <span class="el-dropdown-link">
-          Select Station: <i class="el-icon-caret-bottom el-icon--right"></i>
-        </span>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="admiralty">Admiralty</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
-
     <el-tabs type="border-card" @tab-click="handleClick">
       <el-tab-pane style="height: 100%">
         <span slot="label"><i class="el-icon-date"></i> Map</span>
@@ -160,13 +151,12 @@
 
 <style>
   .visualization-container{
-    background-color: #ae93b6;
     height: 100%;
     margin-left: 10px;
 
   }
   .el-tabs__content{
-    height: 90%;
+    height: calc(100% - 23px);
   }
 
   .el-tabs--border-card{

@@ -1,11 +1,13 @@
 <template>
   <div id="app">
     <OverviewMap class="top-container"></OverviewMap>
-    <section id="analysisview" class="middle-container">
-      <StationSelection class="middle-left"></StationSelection>
-      <VideoAnalysis class="middle-middle"></VideoAnalysis>
-      <Visualization class="middle-right"></Visualization>
-    </section>
+    <div class="analysiscontainer">
+      <section id="analysisview" class="middle-container">
+        <StationSelection class="middle-left"></StationSelection>
+        <VideoAnalysis class="middle-middle"></VideoAnalysis>
+        <Visualization class="middle-right"></Visualization>
+      </section>
+    </div>
     <footer class="def-footer">
       footer
     </footer>
@@ -33,6 +35,7 @@
       }
     },
     mounted(){
+//      window.onwheel = function(){ return false; }
     },
     methods:{
       startUpdate(){
@@ -50,24 +53,36 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    background-color: #5e7382;
     /*margin-top: 60px;*/
+    /*overflow-y: visible;*/
   }
+  html::-webkit-scrollbar
+  {
+    background-color: #ffffff;
+    width: 1px;
+  }
+
   .top-container{
     height: 100%
+  }
+  .analysiscontainer{
+    height: 100%;
+    background-color:#f3f3f3;
   }
   .middle-container{
     margin-top: 10px;
     width: 80%;
-    height: 90%;
+    height: 98%;
     display: inline-block
   }
   .middle-left{
     width: 20%;
-    height: 100%;
+    height: 98%;
     float: left;
   }
   .middle-middle{
-    height: 100%;
+    height: 98%;
     width: 30%;
     float: left;
   }

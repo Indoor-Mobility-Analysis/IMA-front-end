@@ -13,8 +13,8 @@ let StationMap = function(el, maps){
   // this.width = el.clientWidth;
 
   // add a div 'layer-station-map' for embedding heatmap canvas
-  this.height = d3.select('.layer-station-map').node().getBoundingClientRect().height;
-  this.width = d3.select('.layer-station-map').node().getBoundingClientRect().width;
+  this.height = d3.select('.layer-station-map').node().getBoundingClientRect().height - 30;
+  this.width = d3.select('.layer-station-map').node().getBoundingClientRect().width ;
 
   this.margin = {top: 5, left: 5, right:5 ,bottom: 5};
 

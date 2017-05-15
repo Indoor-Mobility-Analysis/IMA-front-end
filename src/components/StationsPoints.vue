@@ -73,8 +73,8 @@
     },
     methods:{
       clickPoint(){
+        pipeService.emitStationSelected('admiralty');
 
-        console.log('height', window);
         jquery('html, body').stop().animate({
           scrollTop:jquery(jquery('#analysisview')).offset().top
         }, 500, 'swing');
