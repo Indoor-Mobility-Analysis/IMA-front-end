@@ -174,9 +174,9 @@ StationMap.prototype.renderMap = function(){
     .on("zoom", zoomed))
 
   function zoomed() {
+    _this.clearHeatmapCanvas();
     _this.rootContainer.attr("transform", d3.event.transform);
     _this.transform = d3.event.transform;
-    _this.clearHeatmapCanvas();
     // console.log('d3.event.transform: ', d3.event.transform);
   }
 
