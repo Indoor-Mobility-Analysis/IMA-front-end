@@ -4,13 +4,13 @@
     <div class="component-container">
       <div class="map-container">
         <!-- <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/> -->
-        <img src="http://maxwell.ielm.ust.hk/thales/mtr-visualization/images/mtr-system-map.jpg">
+        <img src="http://maxwell.ielm.ust.hk/thales/mtr-visualization/images/mtr-system-map.jpg"/>
         <StationPoints v-for="station in stations"
                        v-bind:stationObj="station"
                        v-bind:key="station.StationId"
                        v-bind:id="station.StationId">
         </StationPoints>
-        </img>
+        <!--</img>-->
         <datetimepicker class="picker"></datetimepicker>
       </div>
     </div>
