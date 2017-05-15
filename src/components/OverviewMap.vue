@@ -57,6 +57,7 @@
     line-height: 400%;
     width: 100%;
     height: 100vh;
+    margin-bottom: 22px;
   }
 
   .map-container{

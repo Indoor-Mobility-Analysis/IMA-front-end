@@ -36,9 +36,9 @@
       let _this = this;
       this.stationId = this.$el.id;
       pipeService.onDatetimeSelected(function(msg){
-        _this.max = msg['max_count'];
-        _this.count = msg[_this.stationId];
-        _this.colorVal = 100 * _this.count / _this.max
+        var max = msg['max_count'];
+        var count = msg[_this.stationId];
+        var colorVal = 100 * count / max
         var step = 20;
 
         var red = new Color(218, 4, 0),
@@ -47,10 +47,10 @@
           start = green,
           end = yellow;
 
-        if (_this.colorVal > 50) {
+        if (colorVal > 50) {
           start = yellow,
             end = red;
-          _this.colorVal = _this.colorVal % 51;
+          colorVal = colorVal % 51;
         }
 
         var startColors = start.getColors(),
@@ -63,9 +63,9 @@
           return Math.floor(final);
         }
 
-        var r = Interpolate(startColors.r, endColors.r, step, _this.colorVal);
-        var g = Interpolate(startColors.g, endColors.g, step, _this.colorVal);
-        var b = Interpolate(startColors.b, endColors.b, step, _this.colorVal);
+        var r = Interpolate(startColors.r, endColors.r, step, colorVal);
+        var g = Interpolate(startColors.g, endColors.g, step, colorVal);
+        var b = Interpolate(startColors.b, endColors.b, step, colorVal);
 
         _this.backgroundColor = "rgba(" + r + ", " + g + ", " + b + ", 0.4)";
         _this.boxShadow = "0px 0px 10px 5px rgba(" + r + ", " + g + ", " + b + ", 0.6)";
