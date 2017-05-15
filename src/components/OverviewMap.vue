@@ -71,7 +71,7 @@
     display: block;
     margin: auto;
     max-width: 100%;
-    max-height: 90vh;
+    max-height: 95vh;
     width: 100%;
     height: auto;
     z-index: 50;
