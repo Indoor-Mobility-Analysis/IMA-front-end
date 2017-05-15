@@ -58,7 +58,7 @@
   .map-container{
     position: relative;
     margin: auto;
-    width: 75%;
+    width: 67%;
   }
 
   img {
