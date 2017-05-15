@@ -10,7 +10,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import Icon from 'vue-awesome/components/Icon'
 
-import VueI18n from 'vue-i18n'
+// import VueI18n from 'vue-i18n'
 import enLocale from 'element-ui/lib/locale/lang/en'
 
 // Vue.config.productionTip = false
@@ -19,9 +19,9 @@ Vue.use(VueVideoPlayer);
 Vue.component('icon', Icon);
 
 // Default language to 'en'
-Vue.use(VueI18n);
-Vue.config.lang = 'en'
-Vue.locale('en', enLocale)
+// Vue.use(VueI18n);
+// Vue.config.lang = 'en'
+// Vue.locale('en', enLocale)
 
 /* eslint-disable no-new */
 new Vue({
