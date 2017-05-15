@@ -40,7 +40,7 @@
           playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
             type: "video/mp4",
-            src: "/static/video/sample.mp4"
+            src: "/static/legend/video/admiralty/g/109.mp4"
           }],
         },
         playerOptions2:{
@@ -53,7 +53,7 @@
           autoplay:true,
           sources: [{
             type: "video/mp4",
-            src: "/static/video/sample.mp4"
+            src: "/static/legend/video/admiralty/g/110.mp4"
           }],
         },
         playerOptions3:{
@@ -66,7 +66,7 @@
           autoplay:true,
           sources: [{
             type: "video/mp4",
-            src: "/static/video/sample.mp4"
+            src: "/static/legend/video/admiralty/g/111.mp4"
           }],
         }
       }
@@ -76,43 +76,43 @@
       bus.$on("event1",function(){
         self.playerOptions.sources = [{
           type: "video/mp4",
-          src: "/static/video/motion.mp4"
+          src: "/static/legend/video/admiralty/lg1/112.mp4"
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
-          src: "/static/video/motion.mp4"
+          src: "/static/legend/video/admiralty/lg1/113.mp4"
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
-          src: "/static/video/motion.mp4"
+          src: "/static/legend/video/admiralty/lg1/114.mp4"
         }];
       });
       bus.$on("event2",function(){
         self.playerOptions.sources = [{
           type: "video/mp4",
-          src: "/static/video/sample.mp4"
+          src: "/static/legend/video/admiralty/g/109.mp4"
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
-          src: "/static/video/sample.mp4"
+          src: "/static/legend/video/admiralty/g/110.mp4"
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
-          src: "/static/video/sample.mp4"
+          src: "/static/legend/video/admiralty/g/111.mp4"
         }];
       });
       bus.$on("event3",function(){
         self.playerOptions.sources = [{
           type: "video/mp4",
-          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+          src: "/static/legend/video/admiralty/lg2/115.mp4"
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
-          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+          src: "/static/legend/video/admiralty/lg2/116.mp4"
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
-          src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+          src: "/static/legend/video/admiralty/lg2/117.mp4"
         }];
       });
 
