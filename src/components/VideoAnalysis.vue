@@ -80,11 +80,11 @@
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
-          src: "/legend/video/admiralty/g/113.mp4"
+          src: "/legend/video/admiralty/lg1/113.mp4"
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
-          src: "/legend/video/admiralty/g/114.mp4"
+          src: "/legend/video/admiralty/lg1/114.mp4"
         }];
       });
       bus.$on("event2",function(){
