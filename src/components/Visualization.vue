@@ -159,10 +159,10 @@
 
   }
   .el-tabs__content{
-    height: calc(100% - 23px);
+    height: calc(100% - 45px);
   }
 
   .el-tabs--border-card{
-    height: calc(100% - 23px);
+    height: calc(100% - 10px);
   }
 </style>
