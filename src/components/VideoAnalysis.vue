@@ -34,8 +34,9 @@
           start: 0,
           playsinline: false,
           muted: true,
+          controls:false,
           language: 'en',
-          height:150,
+          height:180,
           autoplay:true,
           playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
@@ -47,9 +48,10 @@
           start:0,
           playsinline:false,
           muted:true,
+          controls:false,
           language:'en',
           playbackRates:[0.7, 1.0, 1.5, 2.0],
-          height:150,
+          height:180,
           autoplay:true,
           sources: [{
             type: "video/mp4",
@@ -59,10 +61,11 @@
         playerOptions3:{
           start:0,
           playsinline:false,
+          controls:false,
           muted:true,
           language:'en',
           playbackRates:[0.7, 1.0, 1.5, 2.0],
-          height:152,
+          height:180,
           autoplay:true,
           sources: [{
             type: "video/mp4",
