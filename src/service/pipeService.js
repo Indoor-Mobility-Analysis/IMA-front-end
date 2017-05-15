@@ -22,7 +22,8 @@ var pipeService = new Vue({
     TRENDTABCLICKED: 'trend_tab_clicked',
 
 
-    FRESHPLAYER: 'fresh_player'
+    FRESHPLAYER: 'fresh_player',
+    FLOORSELECTED: 'floor_selected'
   },
 
   methods:{
@@ -130,6 +131,16 @@ var pipeService = new Vue({
       })
     },
 
+
+      //    // Render on frame/ per seconds
+    emitFloorSelected: function(msg){
+      this.$emit(this.FLOORSELECTED, msg);
+    },
+    onFloorSelected: function(callback){
+      this.$on(this.FLOORSELECTED,function(msg){
+        callback(msg);
+      })
+    },
   }
 });
 

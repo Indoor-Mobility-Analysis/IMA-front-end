@@ -55,7 +55,18 @@
           _this.stationMap.updateHeatmapCanvas(_this.frameData);
           _this.stationMap.updateBubblemap(_this.frameData);
         }
-      })
+      });
+      pipeService.onFloorSelected(function(floor){
+        console.log('floor', floor);
+        let formatFloor = parseInt(floor);
+        if(floor != undefined || floor != null){
+          _this.mapDataArr.forEach(function(mapObj){
+            if(mapObj['floor'] == formatFloor){
+              _this.floorSelect = formatFloor
+            }
+          })
+        }
+      });
     },
     watch:{
       floorSelect(floorSelect){
@@ -67,8 +78,6 @@
         _this.mapDataArr.forEach(function(mapObj){
           if(mapObj['floor'] == floorSelect){
             _this.stationMap.setMap(mapObj);
-            //Update rendering
-
           }
         })
         _this.stationMap.setLegend(_this.legendData['legendConfig']);

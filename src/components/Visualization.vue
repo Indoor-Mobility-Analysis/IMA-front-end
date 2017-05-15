@@ -95,6 +95,9 @@
           if(_this.currentRecord['next']){
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
+            if(_this.currentRecord['time_stamp'] && _this.currentRecord['time_stamp'] % 5 ==0){
+                pipeService.emitFreshPlayer(_this.currentRecord['time_stamp']);
+            }
           }else{
           }
           time = new Date();

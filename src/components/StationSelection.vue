@@ -2,11 +2,11 @@
   <div class="station-selection-container">
     <div class = "wrap">
       <div class ="navi-logo">
-         <icon class = "logo" name="list" scale = "2" color="#fff"></icon>
+        <icon class = "logo" name="list" scale = "2" color="#fff"></icon>
       </div>
-    <div class = "navi-selection">
-      <p>Station Selection</p>
-    </div>
+      <div class = "navi-selection">
+        <p>Station Selection</p>
+      </div>
     </div>
 
     <div class = "station-wapper">
@@ -51,25 +51,29 @@
       }
     },
     methods:{
-        changelg1:function(){
-             var self = this;
-             document.getElementById("ul-lg1-id").style.background = "#ADD8E";
-             document.getElementById("ul-g-id").style.background = "#B0E0E6";
-             document.getElementById("ul-lg2-id").style.background = "#B0E0E6";
-             bus.$emit("event1");
-        },
-        changeg:function(){
-             document.getElementById("ul-g-id").style.background = "#ADD8E6";
-             document.getElementById("ul-lg1-id").style.background = "#B0E0E6";
-             document.getElementById("ul-lg2-id").style.background = "#B0E0E6";
-             bus.$emit("event2");
-        },
-        changelg2:function(){
-             document.getElementById("ul-lg2-id").style.background = "#ADD8E6";
-             document.getElementById("ul-lg1-id").style.background = "#B0E0E6";
-             document.getElementById("ul-g-id").style.background = "#B0E0E6";
-             bus.$emit("event3");
-        }
+      changelg1:function(){
+        var self = this;
+        document.getElementById("ul-lg1-id").style.background = "#ADD8E";
+        document.getElementById("ul-g-id").style.background = "#B0E0E6";
+        document.getElementById("ul-lg2-id").style.background = "#B0E0E6";
+        bus.$emit("event1");
+        pipeService.emitFloorSelected(-1);
+      },
+      changeg:function(){
+        document.getElementById("ul-g-id").style.background = "#ADD8E6";
+        document.getElementById("ul-lg1-id").style.background = "#B0E0E6";
+        document.getElementById("ul-lg2-id").style.background = "#B0E0E6";
+        bus.$emit("event2");
+
+        pipeService.emitFloorSelected(0);
+      },
+      changelg2:function(){
+        document.getElementById("ul-lg2-id").style.background = "#ADD8E6";
+        document.getElementById("ul-lg1-id").style.background = "#B0E0E6";
+        document.getElementById("ul-g-id").style.background = "#B0E0E6";
+        bus.$emit("event3");
+        pipeService.emitFloorSelected(-2);
+      }
     }
   }
 </script>
@@ -181,11 +185,11 @@
     height:40px;
   }
   .LG1{
-     list-style-type:none;
-     color:#fff;
-     display:-webkit-box;
-     height:40px;
-     font-size:18px;
+    list-style-type:none;
+    color:#fff;
+    display:-webkit-box;
+    height:40px;
+    font-size:18px;
   }
   .LG2{
     list-style-type:none;
