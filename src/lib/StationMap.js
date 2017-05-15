@@ -215,9 +215,6 @@ StationMap.prototype.renderMap = function(){
 // }
 
 StationMap.prototype.setLegend = function(legendConfig){
-
-  // console.log('in stationmap, lengendConfig: ', legendConfig);
-
   let _this = this;
   this.legendConfig = legendConfig;
 

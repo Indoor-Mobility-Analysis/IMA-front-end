@@ -15,7 +15,6 @@
 <script>
   import pipeService from '../service/pipeService';
   import Color from '../lib/Color';
-  import TWEEN from 'tween'
   import jquery from 'jquery'
   export default {
     name: 'station',
