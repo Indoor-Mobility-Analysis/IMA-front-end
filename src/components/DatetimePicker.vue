@@ -68,5 +68,7 @@ http://element.eleme.io/#/en-US/component/datetime-picker
 </script>
 
 <style scope>
-
+    .block{
+      position: absolute;
+    }
 </style>

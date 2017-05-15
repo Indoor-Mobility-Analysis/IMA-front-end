@@ -58,7 +58,7 @@
   .map-container{
     position: relative;
     margin: auto;
-    width: 67%;
+    width: 75%;
   }
 
   img {
@@ -68,10 +68,14 @@
     max-height: 90%;
     width: 100%;
     height: auto;
+    z-index: 50;
   }
 
   .picker{
     float: left;
+    z-index: 100;
+    top: 1%;
+    right: 1%;
   }
 
 </style>
