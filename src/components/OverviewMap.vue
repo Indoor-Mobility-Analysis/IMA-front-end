@@ -5,6 +5,7 @@
       <div class="map-container">
         <!-- <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/> -->
         <img src="http://maxwell.ielm.ust.hk/thales/mtr-visualization/images/mtr-system-map.jpg"/>
+        
         <StationPoints v-for="station in stations"
                        v-bind:stationObj="station"
                        v-bind:key="station.StationId"
@@ -48,27 +49,37 @@
 <style scope>
   .overview-map-container{
     background-color: #4fb699;
-    height: 100%
+    width: 100%;
+    height: 100%;
   }
 
   .component-container{
-    line-height: 500%;
+    line-height: 400%;
+    width: 100%;
+    height: 90%;
   }
 
   .map-container{
+    display: block;
     position: relative;
     margin: auto;
-    width: 67%;
+    width: 75%;
+    height: auto;
   }
 
   img {
     display: block;
     margin: auto;
     max-width: 100%;
-    max-height: 90%;
+    max-height: 100%;
     width: 100%;
     height: auto;
     z-index: 50;
+  }
+
+  .station{
+    position: absolute;
+
   }
 
   .picker{

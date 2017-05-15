@@ -91,6 +91,6 @@
 <style scope>
   .station{
     cursor: pointer;
-    position: absolute;
+    /*position: absolute;*/
   }
 </style>
