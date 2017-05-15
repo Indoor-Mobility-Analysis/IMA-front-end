@@ -5,9 +5,9 @@
       <div class="map-container">
         <!-- <img src="http://itf170b.cse.ust.hk/images/map.png" style="width:100%; height: auto"/> -->
         <img src="http://maxwell.ielm.ust.hk/thales/mtr-visualization/images/mtr-system-map.jpg">
-        <StationPoints v-for="station in stations" 
-                       v-bind:stationObj="station" 
-                       v-bind:key="station.StationId" 
+        <StationPoints v-for="station in stations"
+                       v-bind:stationObj="station"
+                       v-bind:key="station.StationId"
                        v-bind:id="station.StationId">
         </StationPoints>
         </img>
@@ -36,7 +36,7 @@
         stations: [],
       }
     },
-    mounted(){ 
+    mounted(){
       let _this = this;
       dataService.readStationRecord(function(stationRecords){
         _this.stations = stationRecords;
@@ -64,7 +64,7 @@
   img {
     display: block;
     margin: auto;
-    max-width: 100%; 
+    max-width: 100%;
     max-height: 90%;
     width: 100%;
     height: auto;
