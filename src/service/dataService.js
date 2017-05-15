@@ -8,6 +8,8 @@ Vue.use(VueResource)
 
 // Assume the port of the data Server is 5000, for test only
 const dataServerUrl = "http://127.0.0.1:5000";
+// const dataServerUrl = "http://127.0.0.1:8080";
+
 const $http = Vue.http
 
 function test (callback) {
