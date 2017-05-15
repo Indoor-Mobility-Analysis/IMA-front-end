@@ -53,12 +53,12 @@ let StationTrend = function(el){
   };
 
   this.xScale = d3.scaleTime()
-    .domain([this.now - (this.limit - 2) * this.duration, this.now - this.duration])
+    .domain([this.now - (this.limit-1)*this.duration, this.now])
     .range([0, this.width]);
 
   this.yScale = d3.scaleLinear()
     .domain([0, 1])
-    .range([this.floorHeight - 20, 20]);
+    .range([this.floorHeight - 35, 0]);
 
   this.line = d3.line()
     .x(function(d, i) {
@@ -67,7 +67,7 @@ let StationTrend = function(el){
     .y(function(d) {
       return _this.yScale(d)
     })
-    .curve(d3.curveCardinal);
+    .curve(d3.curveLinear);
 
   this.initContainer();
 };
@@ -82,29 +82,29 @@ StationTrend.prototype.initContainer = function(){
 
   this.gTop = this.svg.append('g')
     .attr('class', 'top')
-    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*0)-10) + ')')
+    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*0)+15) + ')')
 
   this.gMiddle = this.svg.append('g')
     .attr('class', 'middle')
-    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*1)-10) + ')')
+    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*1)+15) + ')')
 
   this.gBottom = this.svg.append('g')
     .attr('class', 'bottom')
-    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*2)-10) + ')')
+    .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*2)+15) + ')')
 
   this.xTop = this.gTop.append('g')
     .attr('class', 'x axis top')
-    .attr('transform', 'translate(0,' + (this.floorHeight-10) + ')')
+    .attr('transform', 'translate(0,' + (this.floorHeight-35) + ')')
     .call(d3.axisBottom(this.xScale))
 
   this.xMiddle = this.gMiddle.append('g')
     .attr('class', 'x axis middle')
-    .attr('transform', 'translate(0,' + (this.floorHeight-10) + ')')
+    .attr('transform', 'translate(0,' + (this.floorHeight-35) + ')')
     .call(d3.axisBottom(this.xScale))
 
   this.xBottom = this.gBottom.append('g')
     .attr('class', 'x axis bottom')
-    .attr('transform', 'translate(0,' + (this.floorHeight-10) + ')')
+    .attr('transform', 'translate(0,' + (this.floorHeight-35) + ')')
     .call(d3.axisBottom(this.xScale))
 
   this.yTop = this.gTop.append('g')
@@ -123,28 +123,28 @@ StationTrend.prototype.initContainer = function(){
     .call(d3.axisLeft(this.yScale))
 
   this.barTop = this.gTop.append("line")
-    .attr("x1", this.xScale(this.now)-10)  //<<== change your code here
+    .attr("x1", this.width)  //<<== change your code here
     .attr("y1", 20)
-    .attr("x2", this.xScale(this.now)-10)  //<<== and here
-    .attr("y2", this.floorHeight-10)
+    .attr("x2", this.width)  //<<== and here
+    .attr("y2", this.floorHeight-35)
     .style("stroke-width", 2)
     .style("stroke", "red")
     .style("fill", "none");
 
   this.barMiddle = this.gMiddle.append("line")
-    .attr("x1", this.xScale(this.now)-10)  //<<== change your code here
+    .attr("x1", this.width)  //<<== change your code here
     .attr("y1", 20)
-    .attr("x2", this.xScale(this.now)-10)  //<<== and here
-    .attr("y2", this.floorHeight-10)
+    .attr("x2", this.width)  //<<== and here
+    .attr("y2", this.floorHeight-35)
     .style("stroke-width", 2)
     .style("stroke", "red")
     .style("fill", "none");
 
   this.barBottom = this.gBottom.append("line")
-    .attr("x1", this.xScale(this.now)-10)  //<<== change your code here
+    .attr("x1", this.width)  //<<== change your code here
     .attr("y1", 20)
-    .attr("x2", this.xScale(this.now)-10)  //<<== and here
-    .attr("y2", this.floorHeight-10)
+    .attr("x2", this.width)  //<<== and here
+    .attr("y2", this.floorHeight-35)
     .style("stroke-width", 2)
     .style("stroke", "red")
     .style("fill", "none");
@@ -167,6 +167,12 @@ StationTrend.prototype.updateLinechart = function (frameData){
 
   this.now = new Date();
   let idx = 0;
+  // Remove oldest data point from each group
+  for (var name in this.groups) {
+    var group = this.groups[name];
+    group.data.shift()
+  }
+
   // Add new values
   for (var name in this.groups) {
     var group = this.groups[name]
@@ -181,7 +187,7 @@ StationTrend.prototype.updateLinechart = function (frameData){
   }
 
   // Shift domain
-  this.xScale.domain([this.now - (this.limit - 2) * this.duration, this.now - this.duration]);
+  this.xScale.domain([this.now - (this.limit-1) * this.duration, this.now]);
 
   // Slide x-axis left
   this.xTop.transition()
@@ -199,30 +205,25 @@ StationTrend.prototype.updateLinechart = function (frameData){
     .ease(d3.easeLinear)
     .call(d3.axisBottom(this.xScale));
 
+
   // Slide paths left
   this.paths[0].attr('transform', null)
     .transition()
     .duration(this.duration)
     .ease(d3.easeLinear)
-    .attr('transform', 'translate(' + this.xScale(this.now - (this.limit - 1) * this.duration) + ')')
+    .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
 
   this.paths[1].attr('transform', null)
     .transition()
     .duration(this.duration)
     .ease(d3.easeLinear)
-    .attr('transform', 'translate(' + this.xScale(this.now - (this.limit - 1) * this.duration) + ')')
+    .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
 
   this.paths[2].attr('transform', null)
     .transition()
     .duration(this.duration)
     .ease(d3.easeLinear)
-    .attr('transform', 'translate(' + this.xScale(this.now - (this.limit - 1) * this.duration) + ')')
-
-  // Remove oldest data point from each group
-  for (var name in this.groups) {
-    var group = this.groups[name];
-    group.data.shift()
-  }
+    .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
 }
 
 
