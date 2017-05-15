@@ -50,13 +50,13 @@
   .overview-map-container{
     background-color: #4fb699;
     width: 100%;
-    height: 100%;
+    height: 100vh;
   }
 
   .component-container{
     line-height: 400%;
     width: 100%;
-    height: 90%;
+    height: 100vh;
   }
 
   .map-container{
@@ -71,7 +71,7 @@
     display: block;
     margin: auto;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 90vh;
     width: 100%;
     height: auto;
     z-index: 50;
