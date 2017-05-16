@@ -57,7 +57,7 @@ let StationTrend = function(el){
     .range([0, this.width]);
 
   this.yScale = d3.scaleLinear()
-    .domain([0, 1])
+    .domain([0, 4])
     .range([this.floorHeight - 35, 0]);
 
   this.line = d3.line()
