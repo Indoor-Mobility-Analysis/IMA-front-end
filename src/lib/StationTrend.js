@@ -18,7 +18,7 @@ let StationTrend = function(el){
   this.widthPerSvg = el.clientWidth;
   this.heightPerSvg = el.clientHeight;
 
-  this.floorHeight = this.heightPerSvg / 3;
+  this.floorHeight = (this.heightPerSvg - this.margin.bottom) / 3;
 
   this.limit = 60*1;
   this.duration = 1000;
@@ -127,7 +127,7 @@ StationTrend.prototype.initContainer = function(){
     .attr("y1", 20)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
-    .style("stroke-width", 2)
+    .style("stroke-width", 1)
     .style("stroke", "red")
     .style("fill", "none");
 
@@ -136,7 +136,7 @@ StationTrend.prototype.initContainer = function(){
     .attr("y1", 20)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
-    .style("stroke-width", 2)
+    .style("stroke-width", 1)
     .style("stroke", "red")
     .style("fill", "none");
 
@@ -145,7 +145,7 @@ StationTrend.prototype.initContainer = function(){
     .attr("y1", 20)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
-    .style("stroke-width", 2)
+    .style("stroke-width", 1)
     .style("stroke", "red")
     .style("fill", "none");
 
