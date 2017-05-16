@@ -178,7 +178,10 @@ StationTrend.prototype.updateLinechart = function (frameData){
     var group = this.groups[name]
 
     // need to change to corresponding floor id, currently hard code.
-    let smallCluster = frameData['records'][idx]['small_clusters'];
+
+    let floor = frameData['records'][idx];
+    if(!floor) continue
+    let smallCluster = floor['small_clusters'];
     let desity = smallCluster == -1? 0: d3.max(smallCluster.map(function(record){ return record[4]}));
     //group.data.push(group.value) // Real values arrive at irregular intervals
     group.data.push(desity==undefined?0:desity);
