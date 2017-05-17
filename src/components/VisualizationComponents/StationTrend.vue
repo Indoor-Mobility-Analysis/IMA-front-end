@@ -13,43 +13,35 @@
     data(){
       return {
         title: "Trend",
-        stationTrend: null
+        stationTrend: null,
+        trendTabFlag: 0
       }
     },
     mounted(){
       let _this = this;
-      
-    //   setTimeout(function(){
-    //   console.log('width----',_this.$el.clientWidth);            
-    //   }, 10000)
 
-    //   console.log(d3.select('.el-tabs__nav'));
-    //   console.log(d3.select('.el-tabs__nav').node());
-    //   console.log(d3.select('.el-tabs__nav').node()[2]);
-
-    //   console.log('---------------------------------------')
-    //   console.log(document.getElementsByClassName("el-tabs__nav"));
-    //   console.log(document.getElementsByClassName("el-tabs__nav")[0]);
-    //   console.log(document.getElementsByClassName("el-tabs__nav")[0].childNodes);
-    //   console.log(document.getElementsByClassName("el-tabs__nav")[0].childNodes[2]);
-
-    //   console.log(document.getElementsByClassName("el-tabs__nav")[0].lastElementChild);
+       _this.stationTrend = new StationTrend(_this.$el);
 
       pipeService.onTrendTabClicked(function(trendTabFlag){
         console.log('onTrendTabClicked');
         if (trendTabFlag == 1) {
           setTimeout(function(){
             console.log('width----',_this.$el.clientWidth);
-            _this.stationTrend = new StationTrend(_this.$el);
+            _this.stationTrend.initContainer();
+            _this.trendTabFlag = trendTabFlag;
           }, 0)
         }
       });
 
       // Update render
       pipeService.onRenderOneFrame(function(frame){
+          console.log('_this.trendTabFlag: ', _this.trendTabFlag)
           console.log('TrendView, newRenderData', frame);
-          if(_this.stationTrend != null) {
+          if(_this.trendTabFlag) {
             _this.stationTrend.updateLinechart(frame);
+          }
+          else {
+            _this.stationTrend.updateData(frame);
           }
       });
     }

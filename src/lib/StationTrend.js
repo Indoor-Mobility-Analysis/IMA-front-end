@@ -6,20 +6,6 @@ import * as d3 from 'd3'
 let StationTrend = function(el){
   let _this = this;
   this.$el = el;
-  this.margin = {top: 20, left: 30, right:20 ,bottom: 20};
-
-  this.width = el.clientWidth - this.margin.left - this.margin.right;
-  this.height = el.clientHeight - this.margin.top - this.margin.bottom;
-
-  console.log('el: ', el);
-  console.log('this.width : ', this.width );
-  console.log('this.height : ', this.height );
-
-  this.widthPerSvg = el.clientWidth;
-  this.heightPerSvg = el.clientHeight;
-
-  this.floorHeight = (this.heightPerSvg - this.margin.bottom) / 3;
-
   this.limit = 60*1;
   this.duration = 1000;
   this.now = new Date(Date.now() - this.duration);
@@ -51,6 +37,18 @@ let StationTrend = function(el){
       })
     },
   };
+};
+
+StationTrend.prototype.initContainer = function(){
+  let _this = this;
+  this.margin = {top: 20, left: 30, right:20 ,bottom: 20};
+  this.width = this.$el.clientWidth - this.margin.left - this.margin.right;
+  this.height = this.$el.clientHeight - this.margin.top - this.margin.bottom;
+
+  this.widthPerSvg = this.$el.clientWidth;
+  this.heightPerSvg = this.$el.clientHeight;
+
+  this.floorHeight = (this.heightPerSvg - this.margin.bottom) / 3;
 
   this.xScale = d3.scaleTime()
     .domain([this.now - (this.limit-1)*this.duration, this.now])
@@ -69,10 +67,7 @@ let StationTrend = function(el){
     })
     .curve(d3.curveLinear);
 
-  this.initContainer();
-};
 
-StationTrend.prototype.initContainer = function(){
 
   d3.select(this.$el).selectAll('svg').remove();
   this.svg = d3.select(this.$el).append('svg')
@@ -160,6 +155,35 @@ StationTrend.prototype.initContainer = function(){
       .style('stroke', group.color)
   }
 };
+
+
+StationTrend.prototype.updateData = function(frameData){
+  console.log('renderData: ', frameData);
+
+  this.now = new Date();
+  let idx = 0;
+  // Remove oldest data point from each group
+  for (var name in this.groups) {
+    var group = this.groups[name];
+    group.data.shift()
+  }
+
+    // Add new values
+  for (var name in this.groups) {
+    var group = this.groups[name]
+
+    // need to change to corresponding floor id, currently hard code.
+
+    let floor = frameData['records'][idx];
+    if(!floor) continue
+    let smallCluster = floor['small_clusters'];
+    let desity = smallCluster == -1? 0: d3.max(smallCluster.map(function(record){ return record[4]}));
+    //group.data.push(group.value) // Real values arrive at irregular intervals
+    group.data.push(desity==undefined?0:desity);
+    ++idx;
+  }
+
+}
 
 
 StationTrend.prototype.updateLinechart = function (frameData){
