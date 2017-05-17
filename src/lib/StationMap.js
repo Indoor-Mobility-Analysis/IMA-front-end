@@ -317,7 +317,7 @@ StationMap.prototype.updateBubblemap = function(frameData){
   bubbles
     .transition()
     .attr('r', function(d){
-      return d[4]*50<10 ? 10: d[4]*50})
+      return d[4]*30<10 ? 10: d[4]*30})
     .text(function(d) {
       return 'density: '+d[4];
     })
@@ -339,7 +339,7 @@ StationMap.prototype.updateBubblemap = function(frameData){
       return _this.yScale(d[1]);
     })
     .attr('r', function(d) {
-      return d[4]*50<10 ? 10: d[4]*50;})
+      return d[4]*30<10 ? 10: d[4]*30;})
     .attr('fill', function(d) {
       return 'blue';
     })
