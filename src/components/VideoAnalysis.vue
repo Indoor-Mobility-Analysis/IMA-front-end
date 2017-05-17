@@ -120,9 +120,7 @@
       });
 
       pipeService.onFreshPlayer(function(timestampe){
-          self.playerOptions.start = timestampe;
-          self.playerOptions2.start = timestampe;
-          self.playerOptions3.start = timestampe;
+
       });
     }
   }
