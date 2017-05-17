@@ -254,10 +254,10 @@ StationMap.prototype.initHeatmapContainer = function(){
   let config = {
     // container: document.getElementById('#' + this.heatmapId),
     container: this.divContainer.node(), // document.querySelector('#' + this.heatmapId),
-    radius: 10,
+    radius: 15,
     maxOpacity: 0.5,
     minOpacity: 0,
-    blur: 0.75
+    blur: 0.85
   }
   this.heatmapInstance = h337.create(config)
   this.canvasHeatmap = this.$el.querySelector('.heatmap-canvas')
@@ -274,7 +274,7 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
       x: Math.round((this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX)*this.transform.k+this.transform.x),
       y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])*this.transform.k+this.transform.y),
       value: record['small_clusters'][pointIdx][4],
-      radius: 10*this.transform.k
+      radius: 15*this.transform.k
     }
     // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
     // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
@@ -292,7 +292,7 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
 
   // heatmap data format
   let data = {
-    max: 1,
+    max: 1.75,
     data: points
   };
   // if you have a set of data points always use setData instead of addData
@@ -311,14 +311,14 @@ StationMap.prototype.updateBubblemap = function(frameData){
   // need to parser renderData
   // console.log('layerId: ', _this.layerId);
   // console.log('updateBubblemap: ', frameData);
-  let bubblesData = frameData[_this.layerId]['small_clusters'];
+  let bubblesData = frameData[_this.layerId]['big_clusters'];
   // console.log('bubblesData: ', bubblesData);
   let bubbles = _this.bubbleContainer.selectAll('circle').data(bubblesData, function(d) {return d[0]+'_'+d[1];})
 
   bubbles
     .transition()
     .attr('r', function(d){
-      return 15;})
+      return d[4]*30<10 ? 10: d[4]*30})
     .text(function(d) {
       return 'density: '+d[4];
     })
@@ -340,7 +340,7 @@ StationMap.prototype.updateBubblemap = function(frameData){
       return _this.yScale(d[1]);
     })
     .attr('r', function(d) {
-      return 15;})
+      return d[4]*30<10 ? 10: d[4]*30;})
     .attr('fill', function(d) {
       return 'blue';
     })
