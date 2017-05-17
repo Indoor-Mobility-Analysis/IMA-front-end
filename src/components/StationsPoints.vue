@@ -73,11 +73,14 @@
     },
     methods:{
       clickPoint(){
-        pipeService.emitStationSelected('admiralty');
+        if(this.stationId == 'ADM'){
+          pipeService.emitStationSelected('admiralty');
 
-        jquery('html, body').stop().animate({
-          scrollTop:jquery(jquery('#analysisview')).offset().top
-        }, 500, 'swing');
+          jquery('html, body').stop().animate({
+            scrollTop:jquery(jquery('#analysisview')).offset().top
+          }, 500, 'swing');
+        }
+
       }
     },
     watch:{

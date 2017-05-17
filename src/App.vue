@@ -9,7 +9,7 @@
       </section>
     </div>
     <footer class="def-footer">
-      footer
+
     </footer>
   </div>
 </template>
@@ -78,21 +78,21 @@
   }
   .middle-left{
     width: 20%;
-    height: 98%;
+    height: 99%;
     float: left;
   }
   .middle-middle{
-    height: 98%;
+    height: 99%;
     width: 30%;
     float: left;
   }
   .middle-right{
-    height: 100%;
+    height: 98%;
     width: 48%;
     float: left;
   }
   .def-footer{
     background-color: #4fb699;
-    height: 10%
+    height: 5%
   }
 </style>
