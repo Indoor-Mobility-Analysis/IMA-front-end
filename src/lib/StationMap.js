@@ -102,6 +102,7 @@ StationMap.prototype.initContainer = function(){
   this.mapAttr['smallestX'] = smallestX;
   this.mapAttr['largestY'] = largestY;
   this.mapAttr['smallestY'] = smallestY;
+  console.log('test', this.mapAttr);
 };
 
 StationMap.prototype.renderMap = function(){
