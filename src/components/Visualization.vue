@@ -79,7 +79,7 @@
 
         // Get legend
         dataService.rendLegendConfiguration(_this.stationId, function(legendConfig){
-          console.log('legendConfig', legendConfig);
+          console.log('Read Legend');
           pipeService.emitLegendConfigReady(legendConfig);
         });
       },
@@ -91,7 +91,6 @@
         let timeGap = 5000;
 
         setInterval(function(){
-//          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
           if(_this.currentRecord['next']){
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
