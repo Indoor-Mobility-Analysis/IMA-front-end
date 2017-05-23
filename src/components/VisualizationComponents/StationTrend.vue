@@ -23,10 +23,8 @@
        _this.stationTrend = new StationTrend(_this.$el);
 
       pipeService.onTrendTabClicked(function(trendTabFlag){
-        console.log('onTrendTabClicked');
         if (trendTabFlag == 1) {
           setTimeout(function(){
-            console.log('width----',_this.$el.clientWidth);
             _this.stationTrend.initContainer();
             _this.trendTabFlag = trendTabFlag;
           }, 0)
@@ -35,8 +33,6 @@
 
       // Update render
       pipeService.onRenderOneFrame(function(frame){
-          console.log('_this.trendTabFlag: ', _this.trendTabFlag)
-          console.log('TrendView, newRenderData', frame);
           if(_this.trendTabFlag) {
             _this.stationTrend.updateLinechart(frame);
           }

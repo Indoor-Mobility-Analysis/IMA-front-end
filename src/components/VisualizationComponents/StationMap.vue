@@ -29,7 +29,6 @@
       pipeService.onMapReady(function(mapData){
         _this.mapDataArr = _this.parseMaps(mapData);
         _this.mapDataArr.forEach(function(mapObj){
-          console.log('_this.$el: ', _this.$el);
           if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
           if(mapObj['floor'] == _this.floorSelect){
             _this.stationMap.setMap(mapObj);
@@ -37,9 +36,6 @@
         })
       });
       pipeService.onLegendConfigReady(function(data){
-        console.log('_this.legendData: ', data);
-        console.log('_this.StationMap: ', _this.stationMap);
-        console.log('_this.StationMap.getStationId(): ', _this.stationMap.getStationId());
         _this.legendData = data;
         if(_this.legendData && _this.stationMap && (_this.stationMap.getStationId() == _this.legendData['stationId'])){
           console.log('create legend');
@@ -48,9 +44,7 @@
       });
       // Update render
       pipeService.onRenderOneFrame(function(frame){
-        console.log('frame', frame)
         _this.frameData = _this.parseFrame(frame);
-        console.log('frameData: ', _this.frameData);
         if(_this.stationMap){
           _this.stationMap.updateHeatmapCanvas(_this.frameData);
           _this.stationMap.updateBubblemap(_this.frameData);

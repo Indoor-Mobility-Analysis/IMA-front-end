@@ -158,8 +158,6 @@ StationTrend.prototype.initContainer = function(){
 
 
 StationTrend.prototype.updateData = function(frameData){
-  console.log('renderData: ', frameData);
-
   this.now = new Date();
   let idx = 0;
   // Remove oldest data point from each group
@@ -187,8 +185,6 @@ StationTrend.prototype.updateData = function(frameData){
 
 
 StationTrend.prototype.updateLinechart = function (frameData){
-  console.log('renderData: ', frameData);
-
   this.now = new Date();
   let idx = 0;
   // Remove oldest data point from each group

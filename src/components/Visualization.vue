@@ -50,7 +50,6 @@
 
       //Once a station is select
       pipeService.onMapReady(function(mapsObj){
-        console.log('mapsObj: ', mapsObj);
         _this.records = [];
         _this.startUpdate();
       })
@@ -61,8 +60,7 @@
     },
     methods:{
       handleClick(tab, event) {
-        console.log(tab, event);
-        console.log('tab: ', tab.label);
+
         if(tab.label == 'Trend' && this.trendTabFlag==1) {
           pipeService.emitTrendTabClicked(this.trendTabFlag);
           this.trendTabFlag = 0;
@@ -79,7 +77,6 @@
 
         // Get legend
         dataService.rendLegendConfiguration(_this.stationId, function(legendConfig){
-          console.log('Read Legend');
           pipeService.emitLegendConfigReady(legendConfig);
         });
       },
@@ -91,11 +88,12 @@
         let timeGap = 5000;
 
         setInterval(function(){
+//          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
           if(_this.currentRecord['next']){
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
             if(_this.currentRecord['time_stamp'] && _this.currentRecord['time_stamp'] % 5 ==0){
-                pipeService.emitFreshPlayer(_this.currentRecord['time_stamp']);
+              pipeService.emitFreshPlayer(_this.currentRecord['time_stamp']);
             }
           }else{
           }
@@ -111,18 +109,21 @@
       },
       getRecordsFromTime(time_stamp, timeRange) {
         let _this = this;
-        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function(records){
-          records = _this.aggregateRecords(records);
-          console.log('records: ', records);
-          if(!records && records.length == 0) return;
+        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function(recordObj){
+          console.log('record', recordObj);
+          let people_activity = recordObj['people_activity'];
+          let ticket_record = recordObj['ticket_record'];
 
-          for(var i = 0, ilen = records.length; i < ilen; i++){
-            if(_this.lastTime < records[i]['time_stamp']){
-              _this.lastRecord['next'] = records[i];
-              _this.lastRecord = records[i];
+          people_activity = _this.aggregateRecords(people_activity);
+          if(!people_activity && people_activity.length == 0) return;
+
+          for(var i = 0, ilen = people_activity.length; i < ilen; i++){
+            if(_this.lastTime < people_activity[i]['time_stamp']){
+              _this.lastRecord['next'] = people_activity[i];
+              _this.lastRecord = people_activity[i];
             }
           }
-          _this.lastTime = records[records.length - 1]['time_stamp'];
+          _this.lastTime = people_activity[people_activity.length - 1]['time_stamp'];
         });
       },
       aggregateRecords(records){
@@ -134,7 +135,6 @@
         records.forEach(function(record, i){
           if(i == 0) {
             obj['time_stamp'] = record['time_stamp'];
-//            console.log('time', record['time_stamp']);
             obj['records'] = [];
           }else if(obj['time_stamp'] != record['time_stamp']){
             aggregates.push(obj);
