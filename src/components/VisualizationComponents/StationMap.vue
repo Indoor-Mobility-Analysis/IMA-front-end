@@ -1,8 +1,8 @@
 <template>
   <div class="station-map-container">
-    <div class="layer-select-ratio">
-      <el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>
-    </div>
+    <!--<div class="layer-select-ratio">-->
+      <!--<el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>-->
+    <!--</div>-->
     <div class="layer-station-map">
     </div>
   </div>

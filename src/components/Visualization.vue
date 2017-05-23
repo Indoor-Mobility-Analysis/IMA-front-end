@@ -3,7 +3,7 @@
     <el-tabs type="border-card" @tab-click="handleClick">
       <el-tab-pane style="height: 100%">
         <span slot="label"><i class="el-icon-date"></i> Map</span>
-        <StationMap  style="height: 100%"></StationMap>
+        <StationMap style="height: 100%"></StationMap>
       </el-tab-pane>
       <!--<el-tab-pane label="Ticket">
         <span slot="label"><i class="el-icon-date"></i> Ticket</span>
