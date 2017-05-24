@@ -29,7 +29,9 @@
       });
 
       pipeService.onRenderOneFrame(function(frame){
-
+          if(_this.ticketTrend){
+              _this.ticketTrend.addData(frame['tickets'])
+          }
       });
     }
   }

@@ -119,11 +119,12 @@
       getRecordsFromTime(time_stamp, timeRange) {
         let _this = this;
         dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function(recordObj){
-          console.log('record', recordObj);
+
           let people_activity = recordObj['people_activity'];
           let ticket_record = recordObj['ticket_record'];
 
-          people_activity = _this.aggregateRecords(people_activity);
+          people_activity = _this.aggregateRecords(people_activity, ticket_record);
+
           if(!people_activity && people_activity.length == 0) return;
 
           for(var i = 0, ilen = people_activity.length; i < ilen; i++){
@@ -135,24 +136,34 @@
           _this.lastTime = people_activity[people_activity.length - 1]['time_stamp'];
         });
       },
-      aggregateRecords(records){
+      aggregateRecords(records, ticket_records){
+
         // The records with same time stamp will be aggregated together
         records.sort((a, b)=> a['time_stamp'] - b['time_stamp']);
         let aggregates = [];
         let time_stamp = 0;
-        let obj = {'time_stamp': 0, 'records': []}
+        let obj = {'time_stamp': 0, 'records': [], 'tickets': []}
         records.forEach(function(record, i){
           if(i == 0) {
             obj['time_stamp'] = record['time_stamp'];
             obj['records'] = [];
+            obj['tickets'] = [];
           }else if(obj['time_stamp'] != record['time_stamp']){
             aggregates.push(obj);
-            obj = {'time_stamp': record['time_stamp'], 'records': []};
+            obj = {'time_stamp': record['time_stamp'], 'records': [], 'tickets': []};
           }
           obj['records'].push(record);
           if( i == records.length - 1){
             aggregates.push(obj);
           }
+        });
+        ticket_records.forEach(function(ticket){
+          let t_time = ticket['time_stamp'];
+          aggregates.forEach(function(agg){
+            if(t_time == agg['time_stamp']){
+              agg['tickets'].push(ticket);
+            }
+          })
         });
         return aggregates
       }
