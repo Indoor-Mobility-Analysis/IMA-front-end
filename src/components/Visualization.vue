@@ -7,7 +7,7 @@
       </el-tab-pane>
       <el-tab-pane label="Ticket">
         <span slot="label"><i class="el-icon-date"></i> Ticket</span>
-        Ticket
+        <TicketView> </TicketView>
       </el-tab-pane>
       <el-tab-pane label="Trend" style="height: 100%">
         <span id="trendTab" slot="label"><i class="el-icon-date"></i> Trend</span>
@@ -22,6 +22,8 @@
   import dataService from '../service/dataService'
   import StationMap from './VisualizationComponents/StationMap.vue'
   import StationTrend from './VisualizationComponents/StationTrend.vue'
+  import TicketView from './VisualizationComponents/TicketView.vue'
+
   export default {
     name: 'Visualization',
     data(){
@@ -55,7 +57,8 @@
     },
     components:{
       StationMap,
-      StationTrend
+      StationTrend,
+      TicketView
     },
     methods:{
       handleClick(tab, event) {
