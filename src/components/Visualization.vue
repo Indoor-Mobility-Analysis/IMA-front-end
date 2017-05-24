@@ -5,10 +5,10 @@
         <span slot="label"><i class="el-icon-date"></i> Map</span>
         <StationMap style="height: 100%"></StationMap>
       </el-tab-pane>
-      <!--<el-tab-pane label="Ticket">
+      <el-tab-pane label="Ticket">
         <span slot="label"><i class="el-icon-date"></i> Ticket</span>
         Ticket
-      </el-tab-pane>-->
+      </el-tab-pane>
       <el-tab-pane label="Trend" style="height: 100%">
         <span id="trendTab" slot="label"><i class="el-icon-date"></i> Trend</span>
         <StationTrend  style="height: 100%"></StationTrend>
@@ -29,7 +29,6 @@
         title: 'Visualization Component',
         stationId: null,
         stationMap: null,
-
         records: {},
         currentRecord:{next: undefined},
         lastRecord: null,
@@ -155,12 +154,10 @@
   .visualization-container{
     height: 100%;
     margin-left: 10px;
-
   }
   .el-tabs__content{
     height: calc(100% - 45px);
   }
-
   .el-tabs--border-card{
     height: calc(100% - 10px);
   }
