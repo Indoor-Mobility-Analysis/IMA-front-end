@@ -41,7 +41,7 @@
           playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
             type: "video/mp4",
-            src: "/ima/static/video/admiralty/g/109.mp4"
+            src: "/ima/static/video/admiralty/g/111.mp4"
           }],
         },
         playerOptions2:{
@@ -69,7 +69,7 @@
           autoplay:true,
           sources: [{
             type: "video/mp4",
-            src: "/ima/static/video/admiralty/g/111.mp4"
+            src: "/ima/static/video/admiralty/g/109.mp4"
           }],
         }
       }
@@ -79,11 +79,11 @@
       bus.$on("event1",function(){
         self.playerOptions.sources = [{
           type: "video/mp4",
-          src: "/ima/static/video/admiralty/lg1/112.mp4"
+          src: "/ima/static/video/admiralty/lg1/113.mp4"
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
-          src: "/ima/static/video/admiralty/lg1/113.mp4"
+          src: "/ima/static/video/admiralty/lg1/112.mp4"
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
@@ -93,7 +93,7 @@
       bus.$on("event2",function(){
         self.playerOptions.sources = [{
           type: "video/mp4",
-          src: "/ima/static/video/admiralty/g/109.mp4"
+          src: "/ima/static/video/admiralty/g/111.mp4"
         }];
         self.playerOptions2.sources = [{
           type: "video/mp4",
@@ -101,7 +101,7 @@
         }];
         self.playerOptions3.sources  = [{
           type: "video/mp4",
-          src: "/ima/static/video/admiralty/g/111.mp4"
+          src: "/ima/static/video/admiralty/g/109.mp4"
         }];
       });
       bus.$on("event3",function(){
@@ -140,7 +140,7 @@
     height:50px;
   }
   .nav-selection{
-    padding:10px;
+    padding:5px;
     height:50px;
     color:#fff;
     font-weight:bold;
