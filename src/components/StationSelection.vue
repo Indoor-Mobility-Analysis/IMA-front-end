@@ -136,7 +136,7 @@
     padding-left:10px;
   }
   .navi-selection{
-    padding:10px;
+    padding:5px;
     height:40px;
     color:#fff;
     font-weight:bold;
