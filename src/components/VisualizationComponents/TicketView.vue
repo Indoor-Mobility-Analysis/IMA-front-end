@@ -1,11 +1,11 @@
 <template>
   <div class="ticket-view-container">
-    ticket
   </div>
 </template>
 
 <script>
   import pipeService from '../../service/pipeService'
+  import TicketTrend from '../../lib/TicketTrend'
 
   import * as d3 from 'd3'
 
@@ -14,19 +14,19 @@
     data(){
       return {
         title: "Trend",
-        stationTrend: null,
-        trendTabFlag: 0
       }
     },
     mounted(){
       let _this = this;
+      _this.ticketTrend = new TicketTrend(this.$el);
 
-      console.log('mount ticket');
-
-      pipeService.onTrendTabClicked(function(trendTabFlag){
-
+      pipeService.onTrendTabClicked(function(msg){
+        if(msg == 'ticket'){
+          setTimeout(function(){
+            _this.ticketTrend.initContainer();
+          }, 0);
+        }
       });
-
 
       pipeService.onRenderOneFrame(function(frame){
 

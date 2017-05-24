@@ -27,6 +27,7 @@
           setTimeout(function(){
             _this.stationTrend.initContainer();
             _this.trendTabFlag = trendTabFlag;
+            console.log('comp', _this.$el.clientWidth);
           }, 0)
         }
       });

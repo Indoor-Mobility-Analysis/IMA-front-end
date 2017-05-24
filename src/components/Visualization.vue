@@ -5,7 +5,7 @@
         <span slot="label"><i class="el-icon-date"></i> Map</span>
         <StationMap style="height: 100%"></StationMap>
       </el-tab-pane>
-      <el-tab-pane label="Ticket">
+      <el-tab-pane label="Ticket" style="height: 100%">
         <span slot="label"><i class="el-icon-date"></i> Ticket</span>
         <TicketView> </TicketView>
       </el-tab-pane>
@@ -66,6 +66,9 @@
         if(tab.label == 'Trend' && this.trendTabFlag==1) {
           pipeService.emitTrendTabClicked(this.trendTabFlag);
           this.trendTabFlag = 0;
+        }
+        if(tab.label == 'Ticket'){
+            pipeService.emitTrendTabClicked('ticket');
         }
       },
 
