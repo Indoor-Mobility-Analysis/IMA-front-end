@@ -36,7 +36,7 @@
           muted: true,
           controls:false,
           language: 'en',
-          height:180,
+          height:200,
           autoplay:true,
           playbackRates: [0.7, 1.0, 1.5, 2.0],
           sources: [{
@@ -51,7 +51,7 @@
           controls:false,
           language:'en',
           playbackRates:[0.7, 1.0, 1.5, 2.0],
-          height:180,
+          height:200,
           autoplay:true,
           sources: [{
             type: "video/mp4",
@@ -65,7 +65,7 @@
           muted:true,
           language:'en',
           playbackRates:[0.7, 1.0, 1.5, 2.0],
-          height:180,
+          height:200,
           autoplay:true,
           sources: [{
             type: "video/mp4",
