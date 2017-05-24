@@ -55,12 +55,12 @@ StationTrend.prototype.initContainer = function(){
     .range([0, this.width]);
 
   this.yScale = d3.scaleLinear()
-    .domain([0, 4])
+    .domain([0, 200])
     .range([this.floorHeight - 35, 0]);
 
   this.line = d3.line()
     .x(function(d, i) {
-      return _this.xScale(_this.now - (_this.limit - 1 - i) * _this.duration)
+      return _this.xScale(_this.now - (_this.limit - 2 - i) * _this.duration)
     })
     .y(function(d) {
       return _this.yScale(d)
@@ -117,9 +117,12 @@ StationTrend.prototype.initContainer = function(){
     .attr('transform', 'translate(0,' + 0 + ')')
     .call(d3.axisLeft(this.yScale))
 
+  this.xList = [this.xTop, this.xMiddle, this.xBottom];
+  this.yList = [this.yTop, this.yMiddle, this.yBottom];
+
   this.barTop = this.gTop.append("line")
     .attr("x1", this.width)  //<<== change your code here
-    .attr("y1", 20)
+    .attr("y1", 0)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
     .style("stroke-width", 1)
@@ -128,7 +131,7 @@ StationTrend.prototype.initContainer = function(){
 
   this.barMiddle = this.gMiddle.append("line")
     .attr("x1", this.width)  //<<== change your code here
-    .attr("y1", 20)
+    .attr("y1", 0)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
     .style("stroke-width", 1)
@@ -137,7 +140,7 @@ StationTrend.prototype.initContainer = function(){
 
   this.barBottom = this.gBottom.append("line")
     .attr("x1", this.width)  //<<== change your code here
-    .attr("y1", 20)
+    .attr("y1", 0)
     .attr("x2", this.width)  //<<== and here
     .attr("y2", this.floorHeight-35)
     .style("stroke-width", 1)
@@ -174,10 +177,8 @@ StationTrend.prototype.updateData = function(frameData){
 
     let floor = frameData['records'][idx];
     if(!floor) continue
-    let smallCluster = floor['small_clusters'];
-    let desity = smallCluster == -1? 0: d3.max(smallCluster.map(function(record){ return record[4]}));
-    //group.data.push(group.value) // Real values arrive at irregular intervals
-    group.data.push(desity==undefined?0:desity);
+    let ppl_cnt = floor['ppl_cnt'];
+    group.data.push(ppl_cnt);
     ++idx;
   }
 
@@ -185,8 +186,11 @@ StationTrend.prototype.updateData = function(frameData){
 
 
 StationTrend.prototype.updateLinechart = function (frameData){
+  console.log('frameData: ',  frameData);
+  let _this = this;
   this.now = new Date();
   let idx = 0;
+  let yMax = 0;
   // Remove oldest data point from each group
   for (var name in this.groups) {
     var group = this.groups[name];
@@ -198,55 +202,45 @@ StationTrend.prototype.updateLinechart = function (frameData){
     var group = this.groups[name]
 
     // need to change to corresponding floor id, currently hard code.
-
     let floor = frameData['records'][idx];
     if(!floor) continue
-    let smallCluster = floor['small_clusters'];
-    let desity = smallCluster == -1? 0: d3.max(smallCluster.map(function(record){ return record[4]}));
-    //group.data.push(group.value) // Real values arrive at irregular intervals
-    group.data.push(desity==undefined?0:desity);
-    group.path.attr('d', this.line)
+    let ppl_cnt = floor['ppl_cnt'];
+    group.data.push(ppl_cnt);
+    yMax = d3.max(group.data) > yMax ? d3.max(group.data):yMax;
     ++idx;
   }
 
-  // Shift domain
+  console.log('yMax', yMax);
   this.xScale.domain([this.now - (this.limit-1) * this.duration, this.now]);
+  this.yScale.domain([0, yMax+30]);
 
-  // Slide x-axis left
-  this.xTop.transition()
-    .duration(this.duration)
-    .ease(d3.easeLinear)
-    .call(d3.axisBottom(this.xScale));
+  idx = 0;
+  for (var name in this.groups) {
+    var group = this.groups[name]
+    console.log('idx: ', idx);
+    // Shift domain
+    this.xList[idx].transition()
+      .duration(this.duration)
+      .ease(d3.easeLinear)
+      .call(d3.axisBottom(this.xScale));
+    
+    
+    this.yList[idx].transition()
+      .call(d3.axisLeft(this.yScale));
 
-  this.xMiddle.transition()
-    .duration(this.duration)
-    .ease(d3.easeLinear)
-    .call(d3.axisBottom(this.xScale));
+    console.log('this.yScale.domain', this.yScale.domain());
+    this.line.y(function(d) {
+      return _this.yScale(d)
+    });
+    group.path.attr('d', this.line);
 
-  this.xBottom.transition()
-    .duration(this.duration)
-    .ease(d3.easeLinear)
-    .call(d3.axisBottom(this.xScale));
-
-
-  // Slide paths left
-  this.paths[0].attr('transform', null)
-    .transition()
-    .duration(this.duration)
-    .ease(d3.easeLinear)
-    .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
-
-  this.paths[1].attr('transform', null)
-    .transition()
+    this.paths[idx].transition()
     .duration(this.duration)
     .ease(d3.easeLinear)
     .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
 
-  this.paths[2].attr('transform', null)
-    .transition()
-    .duration(this.duration)
-    .ease(d3.easeLinear)
-    .attr('transform', 'translate(' + (this.xScale(this.now-this.duration)-this.xScale(this.now)) + ')')
+    idx += 1;
+  }
 }
 
 
