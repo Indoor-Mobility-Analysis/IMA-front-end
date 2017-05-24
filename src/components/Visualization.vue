@@ -53,6 +53,10 @@
       pipeService.onMapReady(function(mapsObj){
         _this.records = [];
         _this.startUpdate();
+      });
+      pipeService.onFloorSelected(function(msg){
+//          console.log('msg', _this.currentRecord['time_stamp'])
+        pipeService.emitCurrentTime(_this.currentRecord['time_stamp'])
       })
     },
     components:{
@@ -68,7 +72,7 @@
           this.trendTabFlag = 0;
         }
         if(tab.label == 'Ticket'){
-            pipeService.emitTrendTabClicked('ticket');
+          pipeService.emitTrendTabClicked('ticket');
         }
       },
 

@@ -122,6 +122,11 @@
       pipeService.onFreshPlayer(function(timestampe){
 
       });
+      pipeService.onCurrentTime(function(timestamp){
+          self.playerOptions.start = timestamp;
+          self.playerOptions2.start = timestamp;
+          self.playerOptions3.start = timestamp;
+      })
     }
   }
 </script>

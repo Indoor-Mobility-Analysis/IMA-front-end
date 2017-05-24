@@ -18,7 +18,7 @@ TicketTrend.prototype.initContainer = function(){
   let _this = this;
   console.log('el2', this.el.clientHeight);
   this.width = this.el.clientWidth;
-  this.height = this.el.clientHeight;
+  this.height = this.el.clientHeight - 40;
 
   let container = d3.select(this.el).append('svg')
     .attr('width', this.width)
@@ -75,7 +75,7 @@ TicketTrend.prototype.initContainer = function(){
     .attr('y',this.ioContainerConfig['marginTop'])
     .attr('width',this.ioContainerConfig['renderWidth'])
     .attr('height', this.ioContainerConfig['renderHeight'])
-    .attr('fill', 'red')
+    .attr('fill', 'green')
 };
 function setRenderRegion(config){
   config.renderWidth = config.width - config.marginLeft - config.marginRight;
