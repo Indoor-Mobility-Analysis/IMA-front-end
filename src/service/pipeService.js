@@ -23,7 +23,8 @@ var pipeService = new Vue({
 
 
     FRESHPLAYER: 'fresh_player',
-    FLOORSELECTED: 'floor_selected'
+    FLOORSELECTED: 'floor_selected',
+    CURRENTFLOOR: 'current_floor'
   },
 
   methods:{
@@ -121,7 +122,7 @@ var pipeService = new Vue({
       })
     },
 
-     //    // Render on frame/ per seconds
+    //    // Render on frame/ per seconds
     emitTrendTabClicked: function(msg){
       this.$emit(this.FRESHPLAYER, msg);
     },
@@ -132,12 +133,22 @@ var pipeService = new Vue({
     },
 
 
-      //    // Render on frame/ per seconds
+    //    // Render on frame/ per seconds
     emitFloorSelected: function(msg){
       this.$emit(this.FLOORSELECTED, msg);
     },
     onFloorSelected: function(callback){
       this.$on(this.FLOORSELECTED,function(msg){
+        callback(msg);
+      })
+    },
+
+    //emitCurrentTime
+    emitCurrentTime: function(msg){
+      this.$emit(this.CURRENTFLOOR, msg);
+    },
+    onCurrentTime: function(callback){
+      this.$on(this.CURRENTFLOOR,function(msg){
         callback(msg);
       })
     },

@@ -122,6 +122,9 @@
       pipeService.onFreshPlayer(function(timestampe){
 
       });
+      pipeService.onCurrentTime(function(timestamp){
+
+      })
     }
   }
 </script>
