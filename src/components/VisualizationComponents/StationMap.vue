@@ -47,7 +47,8 @@
         _this.frameData = _this.parseFrame(frame);
         if(_this.stationMap){
           _this.stationMap.updateHeatmapCanvas(_this.frameData);
-          _this.stationMap.updateBubblemap(_this.frameData);
+          console.log('_this.frameData: ', _this.frameData)
+          // _this.stationMap.updateBubblemap(_this.frameData);
         }
       });
       pipeService.onFloorSelected(function(floor){
