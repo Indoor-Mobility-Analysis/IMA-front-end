@@ -53,13 +53,22 @@ TicketTrend.prototype.initContainer = function(){
   let _this = this;
   this.width = this.el.clientWidth;
   this.height = this.el.clientHeight - 40;
+  let legendContainerConfig = {
+    'height': 0.1 * this.height,
+    'width': this.width,
+    'marginTop': 30,
+    'marginBottom': 30,
+    'marginLeft': 15,
+    'marginRight' :15
+  };
 
-  let container = d3.select(this.el).append('svg')
+  let svg = d3.select(this.el).append('svg')
     .attr('width', this.width)
     .attr('height', this.height);
 
+
   this.secContainerConfig = {
-    'height': 0.4 * this.height,
+    'height': 0.35 * this.height,
     'width': this.width,
     'marginTop': 30,
     'marginBottom': 30,
@@ -68,7 +77,7 @@ TicketTrend.prototype.initContainer = function(){
   };
   setRenderRegion(this.secContainerConfig);
   this.dailyContainerConfig = {
-    'height': 0.4 * this.height,
+    'height': 0.35 * this.height,
     'width': this.width,
     'marginTop': 30,
     'marginBottom': 30,
@@ -85,6 +94,12 @@ TicketTrend.prototype.initContainer = function(){
     'marginRight': 15
   };
   setRenderRegion(this.ioContainerConfig);
+
+  this.legendContainer = svg.append('g');
+
+  let container = svg.append('g').attr('transform', function(){
+    return 'translate(0,' + legendContainerConfig['height']+')';
+  })
 
   this.secContainer = container.append('g').attr('class', 'second_container')
     .attr('transform', 'translate(0, 0)');
@@ -142,12 +157,12 @@ TicketTrend.prototype.iniScale = function(){
     }
   }
   console.log('attr', this.secContainerConfig['renderWidth'], this.maxRealtimeRecord - 1)
-  this.ticketXScale = d3.scaleLinear().range([0, this.secContainerConfig['renderWidth']]).domain([0, this.maxRealtimeRecord]);
+  this.ticketXScale = d3.scaleLinear().range([60, this.secContainerConfig['renderWidth']]).domain([0, this.maxRealtimeRecord]);
 };
 
 TicketTrend.prototype.addData = function(records){
   let _this = this;
-  // // For test
+  // For test
   // _this.allGate.forEach(function(d){
   //   let id = d['id'];
   //   let type = d['type'];
@@ -156,7 +171,7 @@ TicketTrend.prototype.addData = function(records){
   //   d['v'] += inNum;
   //   _this.IOMap[type]['v'] += inNum;
   // });
-  // // For test end
+  // For test end
 
   let ticketObj = {};
   records.forEach(function(record){
@@ -255,11 +270,7 @@ TicketTrend.prototype.updateIOView = function(){
     .attr('width', 0)
     .attr('height', barHeight)
     .attr('fill', function(d, i){
-      if(i == 0){
-        return 'green';
-      }else{
-        return 'grey';
-      }
+      return _this.colorStyle[d['id']]
     })
     .attr('opacity', 0.3);
 };
@@ -302,11 +313,7 @@ TicketTrend.prototype.updateDailyView = function(){
     .attr('width', 0)
     .attr('height', barHeight)
     .attr('fill', function(d, i){
-      if(i == 0){
-        return 'green';
-      }else{
-        return 'grey';
-      }
+      return _this.colorStyle[d['type']]
     })
     .attr('opacity', 0.3);
   let textContainer = barContainer.append('g').attr('class','textContaienr').attr('transform',function(d, i){
@@ -363,11 +370,11 @@ TicketTrend.prototype.updateSecondView = function(){
       .attr('class', 'ticket');
     tickets.attr('x', function(v, i){
       let x =_this.ticketXScale(i)
-      return x
+      return x ;
     }).attr('height', _this.secContainerConfig.renderHeight / 10)
       .attr('width', _this.secContainerConfig.renderWidth / _this.maxRealtimeRecord)
       .attr('fill', function(d, i){
-        return color
+        return color;
       })
       .attr('opacity', function(d){
 
@@ -375,7 +382,6 @@ TicketTrend.prototype.updateSecondView = function(){
       })
       .attr('stroke', 'black')
       .attr('stroke-width',1)
-
   })
 };
 function setRenderRegion(config){
