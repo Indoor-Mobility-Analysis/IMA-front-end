@@ -186,7 +186,6 @@ StationTrend.prototype.updateData = function(frameData){
 
 
 StationTrend.prototype.updateLinechart = function (frameData){
-  console.log('frameData: ',  frameData);
   let _this = this;
   this.now = new Date();
   let idx = 0;
@@ -210,14 +209,12 @@ StationTrend.prototype.updateLinechart = function (frameData){
     ++idx;
   }
 
-  console.log('yMax', yMax);
   this.xScale.domain([this.now - (this.limit-1) * this.duration, this.now]);
   this.yScale.domain([0, yMax+30]);
 
   idx = 0;
   for (var name in this.groups) {
     var group = this.groups[name]
-    console.log('idx: ', idx);
     // Shift domain
     this.xList[idx].transition()
       .duration(this.duration)
@@ -228,7 +225,6 @@ StationTrend.prototype.updateLinechart = function (frameData){
     this.yList[idx].transition()
       .call(d3.axisLeft(this.yScale));
 
-    console.log('this.yScale.domain', this.yScale.domain());
     this.line.y(function(d) {
       return _this.yScale(d)
     });
