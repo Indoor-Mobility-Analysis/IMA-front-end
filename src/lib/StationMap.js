@@ -292,7 +292,7 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
 
   // heatmap data format
   let data = {
-    max: 1.75,
+    max: 1.5,
     data: points
   };
   // if you have a set of data points always use setData instead of addData
