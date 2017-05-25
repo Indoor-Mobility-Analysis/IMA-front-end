@@ -13,6 +13,9 @@ let TicketTrend = function(el){
     'I': '#f46d43',
     'O': '#3288bd'
   }
+  this.barMargin = 60;
+  this.barMarginLeft = 90;
+  this.barMarginRight = 20;
 };
 
 TicketTrend.prototype.init = function(){
@@ -32,7 +35,7 @@ TicketTrend.prototype.init = function(){
     }
     _this.allGate.push({
       id:id,
-      type: id[0]=='O'? 'I':'O',
+      type: id[0]=='I'? 'I':'O',
       v: 0,
       recent:recent
     })
@@ -53,8 +56,8 @@ TicketTrend.prototype.initContainer = function(){
   let _this = this;
   this.width = this.el.clientWidth;
   this.height = this.el.clientHeight - 40;
-  let legendContainerConfig = {
-    'height': 0.1 * this.height,
+  this.legendContainerConfig = {
+    'height': 0.05 * this.height,
     'width': this.width,
     'marginTop': 30,
     'marginBottom': 30,
@@ -65,7 +68,8 @@ TicketTrend.prototype.initContainer = function(){
   let svg = d3.select(this.el).append('svg')
     .attr('width', this.width)
     .attr('height', this.height);
-
+  _this.svg = svg;
+  this.initShadow();
 
   this.secContainerConfig = {
     'height': 0.35 * this.height,
@@ -97,9 +101,15 @@ TicketTrend.prototype.initContainer = function(){
 
   this.legendContainer = svg.append('g');
 
+  this.legendDate = this.legendContainer.append('text').attr('x', this.secContainerConfig.width * 2 / 3)
+    .attr('y', this.legendContainerConfig.height / 2)
+
+  let Throughput  =(this.allIO[0]['v'] + this.allIO[1]['v'])
+  this.legendDate.text("Throughput:  " + Throughput).style('font-family', 'Helvetica Neue').style('font-size', '12px');;
+
   let container = svg.append('g').attr('transform', function(){
-    return 'translate(0,' + legendContainerConfig['height']+')';
-  })
+    return 'translate(0,' + _this.legendContainerConfig['height']+')';
+  });
 
   this.secContainer = container.append('g').attr('class', 'second_container')
     .attr('transform', 'translate(0, 0)');
@@ -112,33 +122,76 @@ TicketTrend.prototype.initContainer = function(){
       _this.dailyContainerConfig.height)+')');
 
   this.secContainer.append('rect').attr('x', this.secContainerConfig['marginLeft'])
-    .attr('y',this.secContainerConfig['marginTop'])
+    .attr('y',this.secContainerConfig['marginTop'] / 2)
     .attr('width',this.secContainerConfig['renderWidth'])
-    .attr('height', this.secContainerConfig['renderHeight'])
-    .attr('stroke', 'red')
-    .attr('stroke-width', 1)
-    .attr('fill', 'none')
+    .attr('height', this.secContainerConfig['height']
+      - this.secContainerConfig.marginBottom
+      + this.secContainerConfig['marginTop'] / 2)
+    .attr('opacity', 0.5)
+    .attr('fill', '#f0f0f0')
+    .style("filter", "url(#drop-shadow)")
 
   this.dailyContainer.append('rect').attr('x', this.dailyContainerConfig['marginLeft'])
-    .attr('y',this.dailyContainerConfig['marginTop'])
+    .attr('y',this.dailyContainerConfig['marginTop'] / 2)
     .attr('width',this.dailyContainerConfig['renderWidth'])
-    .attr('height', this.dailyContainerConfig['renderHeight'])
-    .attr('fill', 'blue')
-    .attr('opacity', 0.1)
+    .attr('height', this.dailyContainerConfig['height']
+      - this.dailyContainerConfig['marginBottom']
+      + this.dailyContainerConfig['marginTop'] / 2)
+    .attr('opacity', 0.5)
+    .attr('fill', '#f0f0f0')
+    .style("filter", "url(#drop-shadow)")
 
-  this.ioContainer.append('rect').attr('x', this.dailyContainerConfig['marginLeft'])
-    .attr('y',this.ioContainerConfig['marginTop'])
+  this.ioContainer.append('rect').attr('x', this.ioContainerConfig['marginLeft'])
+    .attr('y',this.ioContainerConfig['marginTop'] / 2)
     .attr('width',this.ioContainerConfig['renderWidth'])
-    .attr('height', this.ioContainerConfig['renderHeight'])
-    .attr('fill', 'green')
-    .attr('opacity', 0.1)
+    .attr('height', this.ioContainerConfig['height']
+      - this.ioContainerConfig['marginBottom']
+      + this.ioContainerConfig['marginTop'] / 2)
+    .attr('opacity', 0.5)
+    .attr('fill', '#f0f0f0')
+    .style("filter", "url(#drop-shadow)");
+
   this.inited = true;
   this.iniScale();
   this.initSecondView();
 };
+TicketTrend.prototype.initShadow = function(){
 
+  var defs = this.svg.append("defs");
+
+// create filter with id #drop-shadow
+// height=130% so that the shadow is not clipped
+  var filter = defs.append("filter")
+    .attr("id", "drop-shadow")
+    .attr("height", "130%");
+
+// SourceAlpha refers to opacity of graphic that this filter will be applied to
+// convolve that with a Gaussian with standard deviation 3 and store result
+// in blur
+  filter.append("feGaussianBlur")
+    .attr("in", "SourceAlpha")
+    .attr("stdDeviation", 5)
+    .attr("result", "blur");
+
+// translate output of Gaussian blur to the right and downwards with 2px
+// store result in offsetBlur
+  filter.append("feOffset")
+    .attr("in", "blur")
+    .attr("dx", 5)
+    .attr("dy", 5)
+    .attr("result", "offsetBlur");
+
+// overlay original SourceGraphic over translated blurred opacity by using
+// feMerge filter. Order of specifying inputs is important!
+  var feMerge = filter.append("feMerge");
+
+  feMerge.append("feMergeNode")
+    .attr("in", "offsetBlur")
+  feMerge.append("feMergeNode")
+    .attr("in", "SourceGraphic");
+}
 TicketTrend.prototype.iniScale = function(){
-
+  let _this = this;
   this.ioXscale = function(value, largest){
     let xScale = d3.scaleLinear().range([0, 0.6 * this.ioContainerConfig['renderWidth']]).domain([0, largest]);
     if((value * 5) < this.ioContainerConfig['renderWidth'] * 0.6){
@@ -157,7 +210,7 @@ TicketTrend.prototype.iniScale = function(){
     }
   }
   console.log('attr', this.secContainerConfig['renderWidth'], this.maxRealtimeRecord - 1)
-  this.ticketXScale = d3.scaleLinear().range([60, this.secContainerConfig['renderWidth']]).domain([0, this.maxRealtimeRecord]);
+  this.ticketXScale = d3.scaleLinear().range([_this.barMarginLeft, this.secContainerConfig['renderWidth'] - _this.barMarginRight]).domain([0, this.maxRealtimeRecord]);
 };
 
 TicketTrend.prototype.addData = function(records){
@@ -203,21 +256,25 @@ TicketTrend.prototype.addData = function(records){
     });
     lens.push(gate['v']);
   });
-  console.log('dd', lens);
-  this.updateView()
+  // console.log('dd', lens);
+  this.updateView();
 };
 TicketTrend.prototype.updateView = function(records){
   if(!this.inited) return;
+  this.svg.selectAll('text').style('font-family', 'Helvetica Neue').style('font-size', '12px');
   this.updateIOView();
   this.updateDailyView();
   this.updateSecondView();
+  this.svg.selectAll('text').style('font-family', 'Helvetica Neue').style('font-size', '12px');
+  let now = new Date();
+  let time  = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+  this.legendDate.text("Throughput:  " + (this.allIO[0]['v'] + this.allIO[1]['v']));
 };
 
 TicketTrend.prototype.updateIOView = function(){
   let _this =  this;
   let largestV = 0;
   this.allIO.forEach(function(io){
-    // io['v'] += parseInt(Math.random() * 10);
     if(largestV < io['v']){
       largestV = io['v'];
     }
@@ -237,7 +294,7 @@ TicketTrend.prototype.updateIOView = function(){
       if(d['v'] == 0)return ""
       return d['v'];
     }).attr('x',function(){
-      let v = _this.ioXscale(d['v'], largestV) + _this.ioContainerConfig.marginLeft + 60;
+      let v = _this.ioXscale(d['v'], largestV) + _this.ioContainerConfig.marginLeft + _this.barMarginLeft;
       return v + 10
     })
   });
@@ -255,24 +312,40 @@ TicketTrend.prototype.updateIOView = function(){
       return 'translate(' + _this.ioContainerConfig.marginLeft+ ','+ height + ')';
     });
 
-  let textContainer = barContainer.append('g').attr('class','textContaienr').attr('transform',function(d, i){
-    return 'translate(0,' + barHeight / 2+ ')';
-  });
-  textContainer.append('text').text(function(d){
-    return d['id'] == 'I'? 'Enter': "Leave";
-  });
-  textContainer.append('text').attr('class', 'number').text(function(d){
-    return ''
-  });
-
   barContainer.append('rect')
-    .attr('x', 60)
+    .attr('x', _this.barMarginLeft)
     .attr('width', 0)
     .attr('height', barHeight)
     .attr('fill', function(d, i){
       return _this.colorStyle[d['id']]
     })
     .attr('opacity', 0.3);
+
+/////////////
+//   let textContainer = barContainer.append('g').attr('class','textContaienr').attr('transform',function(d, i){
+//     return 'translate(0,' + barHeight / 2+ ')';
+//   });
+//   textContainer.append('text').text(function(d){
+//     return d['id'] == 'I'? 'Enter': "Leave";
+//   });
+//   textContainer.append('text').attr('class', 'number').text(function(d){
+//     return ''
+//   });
+//////
+  let textContainer = barContainer.append('g');
+  let texts = textContainer.append('text').text(function(d){
+    return d['id'] == "I"? "Total Entry ": "Total Exit ";
+  });
+  textContainer.append('text').attr('class','number');
+
+  let node = texts.node();
+  if(!node) return;
+  let bound = node.getBBox();
+  texts.attr('x', _this.barMarginLeft - bound.width - 5)
+
+  textContainer.attr('transform',function(d, i){
+    return 'translate(0,' + (barHeight / 2 + bound.height / 2 - 3) + ')';
+  });
 };
 
 TicketTrend.prototype.updateDailyView = function(){
@@ -297,7 +370,7 @@ TicketTrend.prototype.updateDailyView = function(){
       if(d['v'] == 0)return ""
       return d['v'];
     }).attr('x',function(){
-      let v = _this.gateXScale(d['v'], largestV) + _this.dailyContainerConfig.marginLeft + 60;
+      let v = _this.gateXScale(d['v'], largestV) + _this.dailyContainerConfig.marginLeft + _this.barMarginLeft;
       return v + 10
     })
   });
@@ -309,38 +382,45 @@ TicketTrend.prototype.updateDailyView = function(){
     });
 
   barContainer.append('rect')
-    .attr('x', 60)
+    .attr('x', _this.barMarginLeft)
     .attr('width', 0)
     .attr('height', barHeight)
     .attr('fill', function(d, i){
       return _this.colorStyle[d['type']]
     })
     .attr('opacity', 0.3);
-  let textContainer = barContainer.append('g').attr('class','textContaienr').attr('transform',function(d, i){
-    return 'translate(0,' + barHeight / 2+ ')';
+
+
+  let textContainer = barContainer.append('g');
+  let texts = textContainer.append('text').text(function(d){
+    return d['id'][0] == "I"? "Entry "+d['id'][1]: "Exit " + d['id'][1];
   });
-  textContainer.append('text').text(function(d){
-    return d['id'];
-  });
-  textContainer.append('text').attr('class', 'number').text(function(d){
-    return ''
+  textContainer.append('text').attr('class','number');
+
+  let node = texts.node();
+  if(!node) return;
+  let bound = node.getBBox();
+  texts.attr('x', _this.barMarginLeft - bound.width - 5)
+
+  textContainer.attr('transform',function(d, i){
+    return 'translate(0,' + (barHeight / 2 + bound.height / 2 - 3) + ')';
   });
 };
 TicketTrend.prototype.initSecondView = function(){
   let _this = this;
-  var limit = 60 * 1,
-    duration = 750;
+
+  let duration = 750;
   this.now = new Date(Date.now() - duration);
   this.limit = 60*1;
   this.duration = 1000;
   this.xsecScale = d3.scaleTime()
     .domain([this.now - (this.limit-1)*this.duration, this.now])
-    .range([0, this.secContainerConfig.renderWidth]);
+    .range([_this.barMarginLeft, this.secContainerConfig.renderWidth - _this.barMarginRight]);
 
   this.secBottom = this.secContainer.append('g')
     .attr('class', 'x axis bottom')
     .attr('transform', 'translate(' +  _this.secContainerConfig.marginLeft + ',' +
-      (_this.secContainerConfig.height - _this.secContainerConfig.marginBottom) + ')')
+      (_this.secContainerConfig.height - _this.secContainerConfig.marginBottom+ 2) + ')')
     .call(d3.axisBottom(this.xsecScale))
 };
 
@@ -348,6 +428,7 @@ TicketTrend.prototype.updateSecondView = function(){
   this.now = new Date();
   let _this = this;
   let singleHeight = this.secContainerConfig.renderHeight / 10;
+  let singleWidth = _this.secContainerConfig.renderWidth / _this.maxRealtimeRecord;
   this.xsecScale.domain([this.now - (this.limit-1) * this.duration, this.now]);
   this.secBottom.transition()
     .duration(this.duration)
@@ -371,8 +452,8 @@ TicketTrend.prototype.updateSecondView = function(){
     tickets.attr('x', function(v, i){
       let x =_this.ticketXScale(i)
       return x ;
-    }).attr('height', _this.secContainerConfig.renderHeight / 10)
-      .attr('width', _this.secContainerConfig.renderWidth / _this.maxRealtimeRecord)
+    }).attr('height', singleHeight)
+      .attr('width', singleWidth)
       .attr('fill', function(d, i){
         return color;
       })
@@ -380,9 +461,22 @@ TicketTrend.prototype.updateSecondView = function(){
 
         return d == 0? 0: 0.5
       })
-      .attr('stroke', 'black')
-      .attr('stroke-width',1)
+      .attr('stroke', 'white')
+      .attr('stroke-width',2)
   })
+
+  let textContainer = gateRecords.append('g')
+  let texts = textContainer.append('text').text(function(d){
+    return d['id'][0] == "I"? "Entry "+d['id'][1]: "Exit " + d['id'][1]
+  });
+
+  let bound = texts.node().getBBox();
+  texts.attr('x', _this.barMarginLeft - bound.width - 5)
+
+  texts.attr('transform',function(d, i){
+    return 'translate(0,' + (singleHeight / 2 + bound.height / 2) + ')';
+  });
+
 };
 function setRenderRegion(config){
   config.renderWidth = config.width - config.marginLeft - config.marginRight;

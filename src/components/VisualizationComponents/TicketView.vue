@@ -42,6 +42,7 @@
     /*background-color: #b6b08f;*/
     height: 100%;
     width: 100%;
+
   }
 
 </style>
