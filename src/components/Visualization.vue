@@ -35,7 +35,9 @@
         currentRecord:{next: undefined},
         lastRecord: null,
         lastTime: 0,
-        trendTabFlag: 1
+        trendTabFlag: 1,
+        isConnected: false,
+        socketMessage: ''
       }
     },
     mounted(){
@@ -64,14 +66,32 @@
       StationTrend,
       TicketView
     },
-    methods:{
+    socket: {
+      connect() {
+        // Fired when the socket connects.
+        console.log('connected')
+        this.isConnected = true;
+      },
+
+      disconnect() {
+          console.log('in connected')
+        this.isConnected = false;
+      },
+
+      // Fired when the server sends something on the "messageChannel" channel.
+      messageChannel(data) {
+        this.socketMessage = data
+      }
+    },
+
+    methods: {
       handleClick(tab, event) {
 
-        if(tab.label == 'Trend' && this.trendTabFlag==1) {
+        if (tab.label == 'Trend' && this.trendTabFlag == 1) {
           pipeService.emitTrendTabClicked(this.trendTabFlag);
           this.trendTabFlag = 0;
         }
-        if(tab.label == 'Ticket'){
+        if (tab.label == 'Ticket') {
           pipeService.emitTrendTabClicked('ticket');
         }
       },
@@ -85,7 +105,7 @@
         pipeService.emitMapReady(_this.stationMap);
 
         // Get legend
-        dataService.rendLegendConfiguration(_this.stationId, function(legendConfig){
+        dataService.rendLegendConfiguration(_this.stationId, function (legendConfig) {
           pipeService.emitLegendConfigReady(legendConfig);
         });
       },
@@ -96,39 +116,39 @@
         let time_stamp = 0;
         let timeGap = 5000;
 
-        setInterval(function(){
+        setInterval(function () {
 //          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
-          if(_this.currentRecord['next']){
+          if (_this.currentRecord['next']) {
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
-            if(_this.currentRecord['time_stamp'] && _this.currentRecord['time_stamp'] % 5 ==0){
+            if (_this.currentRecord['time_stamp'] && _this.currentRecord['time_stamp'] % 5 == 0) {
               pipeService.emitFreshPlayer(_this.currentRecord['time_stamp']);
             }
-          }else{
+          } else {
           }
           time = new Date();
         }, 1000);
 
         _this.getRecordsFromTime(time_stamp, timeGap);
         time_stamp += timeGap;
-        setInterval(function(){
+        setInterval(function () {
           _this.getRecordsFromTime(time_stamp, timeGap);
           time_stamp += timeGap;
         }, 3000)
       },
       getRecordsFromTime(time_stamp, timeRange) {
         let _this = this;
-        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function(recordObj){
+        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function (recordObj) {
 
           let people_activity = recordObj['people_activity'];
           let ticket_record = recordObj['ticket_record'];
 
           people_activity = _this.aggregateRecords(people_activity, ticket_record);
 
-          if(!people_activity && people_activity.length == 0) return;
+          if (!people_activity && people_activity.length == 0) return;
 
-          for(var i = 0, ilen = people_activity.length; i < ilen; i++){
-            if(_this.lastTime < people_activity[i]['time_stamp']){
+          for (var i = 0, ilen = people_activity.length; i < ilen; i++) {
+            if (_this.lastTime < people_activity[i]['time_stamp']) {
               _this.lastRecord['next'] = people_activity[i];
               _this.lastRecord = people_activity[i];
             }
@@ -139,33 +159,40 @@
       aggregateRecords(records, ticket_records){
 
         // The records with same time stamp will be aggregated together
-        records.sort((a, b)=> a['time_stamp'] - b['time_stamp']);
+        records.sort((a, b) => a['time_stamp'] - b['time_stamp']);
         let aggregates = [];
         let time_stamp = 0;
         let obj = {'time_stamp': 0, 'records': [], 'tickets': []}
-        records.forEach(function(record, i){
-          if(i == 0) {
+        records.forEach(function (record, i) {
+          if (i == 0) {
             obj['time_stamp'] = record['time_stamp'];
             obj['records'] = [];
             obj['tickets'] = [];
-          }else if(obj['time_stamp'] != record['time_stamp']){
+          } else if (obj['time_stamp'] != record['time_stamp']) {
             aggregates.push(obj);
             obj = {'time_stamp': record['time_stamp'], 'records': [], 'tickets': []};
           }
           obj['records'].push(record);
-          if( i == records.length - 1){
+          if (i == records.length - 1) {
             aggregates.push(obj);
           }
         });
-        ticket_records.forEach(function(ticket){
+        ticket_records.forEach(function (ticket) {
           let t_time = ticket['time_stamp'];
-          aggregates.forEach(function(agg){
-            if(t_time == agg['time_stamp']){
+          aggregates.forEach(function (agg) {
+            if (t_time == agg['time_stamp']) {
               agg['tickets'].push(ticket);
             }
           })
         });
         return aggregates
+      }
+    },
+    socket:{
+      events: {
+        change(msg){
+          console.log('something changed', msg);
+        }
       }
     }
   }
