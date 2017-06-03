@@ -14,14 +14,8 @@ var pipeService = new Vue({
     REGIONBRUSHED: 'region_brushed',
     NAVIGATIONBRUSHSTART:' navigation_brush_start',
     RENDERFRAME: 'render_frame',
-
-
     DATETIMESELECTED: 'datetime_selected',
-
-
     TRENDTABCLICKED: 'trend_tab_clicked',
-
-
     FRESHPLAYER: 'fresh_player',
     FLOORSELECTED: 'floor_selected',
     CURRENTFLOOR: 'current_floor'

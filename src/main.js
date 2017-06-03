@@ -15,11 +15,8 @@ import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
 locale.use(lang)
 
-// import VueWebsocket from "vue-websocket";
-// Vue.use(VueWebsocket,'"ws://127.0.0.1:5000"');
-
-import VueSocketio from 'vue-socket.io';
-Vue.use(VueSocketio, 'http://127.0.0.1:5000');
+import VueSocketio from 'vue-socket.io'
+Vue.use(VueSocketio, 'http://localhost:5000/test')
 
 // Vue.config.productionTip = false
 Vue.use(ElementUI);

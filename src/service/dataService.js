@@ -12,6 +12,26 @@ const dataServerUrl = "http://127.0.0.1:5000";
 
 const $http = Vue.http
 
+var socketService = new Vue({
+  data:{
+
+  },
+  sockets:{
+    // 'my_response': function(msg) {
+    //   console.log('my_response', msg);
+    // }
+  },
+  methods:{
+    emit(msg){
+
+    }
+  }
+});
+
+function onSocket(event, func){
+
+}
+
 function test (callback) {
   const url = `${dataServerUrl}/test`
   $http.get(url).then(response => {
@@ -60,12 +80,12 @@ function readStationRecord(callback){
 
 // Added by Qing Du (q.du@ust.hk)
 function readPeopleCount(day, time, callback){
-    const url = `${dataServerUrl}/getPeopleCount`
-    $http.post(url, {'day': day, 'time': time}).then(response => {
-        callback(response.data)
-    }, errResponse => {
-        console.log(errResponse)
-    })
+  const url = `${dataServerUrl}/getPeopleCount`
+  $http.post(url, {'day': day, 'time': time}).then(response => {
+    callback(response.data)
+  }, errResponse => {
+    console.log(errResponse)
+  })
 }
 
 export default{

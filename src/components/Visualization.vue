@@ -40,11 +40,13 @@
         socketMessage: ''
       }
     },
+
     mounted(){
       let _this = this;
       this.lastRecord = this.currentRecord;
       pipeService.onStationSelected(function(stationId){
         _this.stationId = stationId;
+        _this.$socket.emit('client_join', {'station_id': stationId});
         dataService.readMap(stationId, function(map){
           _this.stationMap = map;
           _this.initializeMap();
@@ -59,31 +61,28 @@
       pipeService.onFloorSelected(function(msg){
 //          console.log('msg', _this.currentRecord['time_stamp'])
         pipeService.emitCurrentTime(_this.currentRecord['time_stamp'])
-      })
+      });
+
+      this.$options.sockets.my_response = (data) => {
+        console.log('recieve', data)
+      }
+      window.onbeforeunload = function (e) {
+        console.log('run here');
+        _this.$socket.emit('client_depart');
+
+      };
     },
     components:{
       StationMap,
       StationTrend,
       TicketView
     },
-    socket: {
-      connect() {
-        // Fired when the socket connects.
-        console.log('connected')
-        this.isConnected = true;
-      },
 
-      disconnect() {
-          console.log('in connected')
-        this.isConnected = false;
-      },
+    destroyed(){
+      this.$socket.emit('client_depart');
+      this.$socket.emit('disconnect');
 
-      // Fired when the server sends something on the "messageChannel" channel.
-      messageChannel(data) {
-        this.socketMessage = data
-      }
     },
-
     methods: {
       handleClick(tab, event) {
 
