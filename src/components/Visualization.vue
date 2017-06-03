@@ -64,7 +64,8 @@
       });
 
       this.$options.sockets.my_response = (data) => {
-        console.log('recieve', data)
+        _this.recieveData(data['data']);
+//        console.log('recieve', data)
       }
       window.onbeforeunload = function (e) {
         console.log('run here');
@@ -130,30 +131,33 @@
 
         _this.getRecordsFromTime(time_stamp, timeGap);
         time_stamp += timeGap;
-        setInterval(function () {
-          _this.getRecordsFromTime(time_stamp, timeGap);
-          time_stamp += timeGap;
-        }, 3000)
+//        setInterval(function () {
+//          _this.getRecordsFromTime(time_stamp, timeGap);
+//          time_stamp += timeGap;
+//        }, 3000)
+      },
+      recieveData(recordObj){
+        let _this = this;
+        let people_activity = recordObj['people_activity'];
+        let ticket_record = recordObj['ticket_record'];
+
+        people_activity = _this.aggregateRecords(people_activity, ticket_record);
+
+        if (!people_activity && people_activity.length == 0) return;
+
+        for (var i = 0, ilen = people_activity.length; i < ilen; i++) {
+          if (_this.lastTime < people_activity[i]['time_stamp']) {
+            _this.lastRecord['next'] = people_activity[i];
+            _this.lastRecord = people_activity[i];
+          }
+        }
+        _this.lastTime = people_activity[people_activity.length - 1]['time_stamp'];
       },
       getRecordsFromTime(time_stamp, timeRange) {
         let _this = this;
-        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function (recordObj) {
-
-          let people_activity = recordObj['people_activity'];
-          let ticket_record = recordObj['ticket_record'];
-
-          people_activity = _this.aggregateRecords(people_activity, ticket_record);
-
-          if (!people_activity && people_activity.length == 0) return;
-
-          for (var i = 0, ilen = people_activity.length; i < ilen; i++) {
-            if (_this.lastTime < people_activity[i]['time_stamp']) {
-              _this.lastRecord['next'] = people_activity[i];
-              _this.lastRecord = people_activity[i];
-            }
-          }
-          _this.lastTime = people_activity[people_activity.length - 1]['time_stamp'];
-        });
+//        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function (recordObj) {
+//          _this.recieveData(recordObj);
+//        });
       },
       aggregateRecords(records, ticket_records){
 
