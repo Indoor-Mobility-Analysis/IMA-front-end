@@ -46,7 +46,8 @@
       this.lastRecord = this.currentRecord;
       pipeService.onStationSelected(function(stationId){
         _this.stationId = stationId;
-        _this.$socket.emit('client_join', {'station_id': stationId});
+
+        _this.$socket.emit('client_join', {'station_id': _this.stationId});
         dataService.readMap(stationId, function(map){
           _this.stationMap = map;
           _this.initializeMap();
@@ -67,10 +68,18 @@
         _this.recieveData(data['data']);
 //        console.log('recieve', data)
       }
-      window.onbeforeunload = function (e) {
-        console.log('run here');
-        _this.$socket.emit('client_depart');
 
+      window.onbeforeunload = function(e) {
+//        var dialogText = 'Dialog text here';
+//        e.returnValue = dialogText;
+        _this.$socket.emit('client_depart', {'station_id': _this.stationId});
+//        return dialogText;
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+          if ((new Date().getTime() - start) > 1000){
+            break;
+          }
+        }
       };
     },
     components:{
@@ -117,7 +126,6 @@
         let timeGap = 5000;
 
         setInterval(function () {
-//          console.log('currentRecord timestamp: ', _this.currentRecord['next']['time_stamp']);
           if (_this.currentRecord['next']) {
             _this.currentRecord = _this.currentRecord['next'];
             pipeService.emitRenderOneFrame(_this.currentRecord);
@@ -128,13 +136,7 @@
           }
           time = new Date();
         }, 1000);
-
-        _this.getRecordsFromTime(time_stamp, timeGap);
         time_stamp += timeGap;
-//        setInterval(function () {
-//          _this.getRecordsFromTime(time_stamp, timeGap);
-//          time_stamp += timeGap;
-//        }, 3000)
       },
       recieveData(recordObj){
         let _this = this;
@@ -152,12 +154,6 @@
           }
         }
         _this.lastTime = people_activity[people_activity.length - 1]['time_stamp'];
-      },
-      getRecordsFromTime(time_stamp, timeRange) {
-        let _this = this;
-//        dataService.readRecordWithTimeRange(_this.stationId, time_stamp, timeRange, function (recordObj) {
-//          _this.recieveData(recordObj);
-//        });
       },
       aggregateRecords(records, ticket_records){
 
