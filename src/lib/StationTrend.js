@@ -142,7 +142,7 @@ StationTrend.prototype.updateData = function(frameData){
 
 
 StationTrend.prototype.updateLinechart = function (frameData){
-  console.log('frameData: ', frameData);
+  // console.log('frameData: ', frameData);
   let _this = this;
   this.now = new Date();
   let yMax = 0;

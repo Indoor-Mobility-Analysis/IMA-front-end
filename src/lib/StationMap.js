@@ -202,6 +202,8 @@ StationMap.prototype.renderMap = function(){
   // bubble container
   this.bubbleContainer = this.rootContainer.append('g').attr('class', 'bubblesContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
   // this.layerContainer.call(brush);
+  // arrow container
+  this.arrowContainer = this.rootContainer.append('g').attr('class', 'arrowContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
 };
 
 // StationMap.prototype.on = function(event, callback){
@@ -360,5 +362,86 @@ StationMap.prototype.updateBubblemap = function(frameData){
     .attr('r', 0)
     .remove();
 };
+
+StationMap.prototype.updateArrowmap = function(frameData){
+  let _this = this;
+  let arrowData = frameData[_this.layerId]['small_clusters'];
+  console.log('arrowData: ', arrowData)
+  // console.log('bubblesData: ', bubblesData);
+  _this.arrowContainer.selectAll('*').remove()
+  let arrows = _this.arrowContainer
+                    .selectAll('.arrows')
+                    .data(arrowData)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'arrows')
+                    .each(function(d) {
+                      // let size = d[4]*10 > 5 ? d[4]*10:5
+                      let size = 7
+                      let opacity = d[4]<0.1? 0.1: d[4]
+                      let tmpG = d3.select(this).attr('transform', 'translate(' + (_this.xScale(d[0])-size/2) + ', ' + (_this.yScale(d[1])-size/2)+ ')');
+                      let arrow = appendArrow(tmpG, size, d[3]/Math.PI*180)
+                      arrow.attr('fill', 'red').attr('stroke-width', 0).attr('opacity', opacity)
+                    })
+
+  // let arrows = _this.arrowContainer.selectAll('.arrow').data(arrowData, function(d) {return d[0]+'_'+d[1];})
+  // arrows
+  //   .transition()
+
+  // arrows
+  //   .enter()
+  //   .append('g')
+  //   .attr()
+  //   .attr('class', 'arrow')
+  //   .each(function(d) {
+  //     console.log('arrows: ', d)
+  //   })
+    
+
+  // arrows
+  //   .exit()
+  //   .transition()
+  //   .attr('fill', 'blue')
+  //   .attr('r', 0)
+  //   .remove();
+
+  function drawPolyline(g, points){
+    let line =d3.line()
+        .x(d=>d[0])
+        .y(d=>d[1])
+    return g.append('path')
+        .datum(points)
+        .attr('d', line)
+        .attr('fill', 'none')
+        .attr('stroke', 'grey')
+        .attr('stroke-width', 2)
+  }
+
+  function appendArrow(g, size, angle){
+    let r = size / 2;
+    let pointAngle = 15;
+    let centralAngle = 180 - pointAngle * 2;
+
+    let x0 = r + r * Math.cos(centralAngle * Math.PI / 180);
+    let y0 = r - r * Math.sin(centralAngle * Math.PI / 180);
+
+    let x1 = r * 2;
+    let y1 = r;
+
+    let x2 = x0;
+    let y2 = r + r * Math.sin(centralAngle * Math.PI / 180);
+
+    let x3 = (x0 + r) / 2;
+    let y3 = r;
+
+    g = g.append('g');
+    g.attr('transform', 'rotate(' + (360 - angle) + ' ' + size / 2 + ' ' + size / 2 + ')')
+
+    return drawPolyline(g, [[x0, y0],[x1, y1],[x2, y2],[x3, y3], [x0, y0]])
+  }
+};
+
+
+
 
 export default StationMap
