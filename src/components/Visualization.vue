@@ -65,6 +65,7 @@
       });
 
       this.$options.sockets.my_response = (data) => {
+        console.log('recieve data', data);
         _this.recieveData(data['data']);
 //        console.log('recieve', data)
       }
@@ -139,6 +140,7 @@
         time_stamp += timeGap;
       },
       recieveData(recordObj){
+
         let _this = this;
         let people_activity = recordObj['people_activity'];
         let ticket_record = recordObj['ticket_record'];

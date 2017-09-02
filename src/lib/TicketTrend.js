@@ -138,7 +138,8 @@ TicketTrend.prototype.initContainer = function(){
       - this.dailyContainerConfig['marginBottom']
       + this.dailyContainerConfig['marginTop'] / 2)
     .attr('opacity', 0.5)
-    .attr('fill', '#f0f0f0')
+    .attr('fill', '#ffffff')
+    // .attr('fill', '#f0f0f0')
     .style("filter", "url(#drop-shadow)")
 
   this.ioContainer.append('rect').attr('x', this.ioContainerConfig['marginLeft'])

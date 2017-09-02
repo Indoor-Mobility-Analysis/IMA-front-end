@@ -1,10 +1,8 @@
 /**
  * Created by Qiaomu on 2017/4/18.
  */
-
-
-import * as d3 from 'd3'
-import h337 from 'heatmap.js'
+import * as d3 from "d3";
+import h337 from "heatmap.js";
 
 let StationMap = function(el, maps){
   this.$el = el;
@@ -33,6 +31,7 @@ let StationMap = function(el, maps){
 };
 
 StationMap.prototype.setMap = function(mapObj){
+  console.log('layer_id', mapObj['floor']);
   this.layerId = mapObj['floor'];
   this.stationId = mapObj['stationId'];
   this.map = mapObj['map'];
@@ -40,10 +39,16 @@ StationMap.prototype.setMap = function(mapObj){
   this.initContainer();
   this.renderMap();
   this.initHeatmapContainer();
+};
+StationMap.prototype.onEvent = function(event, func){
+  if(event == 'flowcontrol'){
+    this.flowControl = func;
+  }
 }
+
 StationMap.prototype.getStationId = function(){
   return this.stationId;
-}
+};
 
 // getScale for NavigationHeatmap
 StationMap.prototype.getScale = function(){
@@ -54,7 +59,34 @@ StationMap.prototype.getScale = function(){
     'offsetY': this.offsetY
   }
 }
+StationMap.prototype.addControlButton = function(){
+  let _this = this;
+  let c_b_container = this.svg.append('g').attr('transform', 'translate(10,10)');
+  let text = c_b_container.append('text')
+    .attr('x', 10)
+    .attr('y', 15)
+    .attr('font-size', 10)
+    .text('Flow Control');
 
+  var bbox = text.node().getBBox();
+
+  var rect = c_b_container.append("rect")
+    .attr("x", bbox.x - 5).attr("y", bbox.y - 5)
+    .attr("width", bbox.width + 10).attr("height", bbox.height + 10)
+    .attr('rx',3).attr('rx',3)
+    .style("fill", "#c4c4c4")
+    .style("fill-opacity", ".1")
+    .style("stroke", "#c4c4c4")
+    .style("stroke-width", "1.5px");
+  rect.on('mouseover', function(){
+    d3.select(this).style('fill-opacity', 0.36);
+  }).on('mouseout', function(){
+    d3.select(this).style('fill-opacity', 0.1);
+  })
+  rect.on('click', function(d){
+    _this.flowControl()
+  })
+};
 StationMap.prototype.initContainer = function(){
 
   d3.select(this.$el).selectAll('.layer-station-map').remove();
@@ -76,6 +108,9 @@ StationMap.prototype.initContainer = function(){
     .attr('class', 'navmapcontainer')
     .attr('height', this.height)
     .attr('width', this.width)
+
+  if(this.layerId == 0)
+    this.addControlButton();
 
   this.rootContainer = this.svg.append('g').attr('class', 'rootContainer');
 
@@ -220,11 +255,6 @@ StationMap.prototype.renderMap = function(){
 StationMap.prototype.setLegend = function(legendConfig){
   let _this = this;
   this.legendConfig = legendConfig;
-
-
-  // this.mapAttrlegendContainer.on('mousemove', function(d){
-
-  // })
   let legendArray = legendConfig[this.layerId];
 
   if(legendArray == undefined) return
@@ -234,17 +264,36 @@ StationMap.prototype.setLegend = function(legendConfig){
       let y = _this.yScale(d['pos'][1]);
       return 'translate(' + x + ',' + y + ')'
     });
-  lcs.append('svg:image')
-    .attr('x',-3)
-    .attr('y',-3)
-    .attr('width',6)
-    .attr('height', 6)
-    .attr("xlink:href",function(d){
-      return 'static/legend/' + d['model']
-    })
-    .on('mouseover', function(d){
-      console.log('over', d['pos'][0],d['pos'][1]);
-    })
+  let lcsContainer = lcs.append('g');
+  lcsContainer.each(function(d, i){
+    let _container = d3.select(this);
+    if(d['type'] != "Ticket Exit" && d['type'] != "Ticket Entry" && d['type'] != "Barrier"){
+      _container.append('svg:image')
+        .attr('x',-3)
+        .attr('y',-3)
+        .attr('width',6)
+        .attr('height', 6)
+        .attr("xlink:href",function(d){
+          return 'static/legend/' + d['model']
+        })
+        .on('mouseover', function(d){
+          console.log('over', d['pos'][0],d['pos'][1]);
+        })
+    }else{
+      _container.append('rect')
+        .attr('x',-3)
+        .attr('y',-3)
+        .attr('width',3)
+        .attr('height', 6)
+        .attr("fill",function(d){
+          return d.type == 'Ticket Exit'? 'blue': d.type == "Ticket Entry" ? 'red' : "grey"
+        })
+        .on('mouseover', function(d){
+          console.log('over', d['pos'][0],d['pos'][1]);
+        })
+    }
+  })
+
 };
 
 
@@ -366,23 +415,23 @@ StationMap.prototype.updateBubblemap = function(frameData){
 StationMap.prototype.updateArrowmap = function(frameData){
   let _this = this;
   let arrowData = frameData[_this.layerId]['small_clusters'];
-  console.log('arrowData: ', arrowData)
+
   // console.log('bubblesData: ', bubblesData);
   _this.arrowContainer.selectAll('*').remove()
   let arrows = _this.arrowContainer
-                    .selectAll('.arrows')
-                    .data(arrowData)
-                    .enter()
-                    .append('g')
-                    .attr('class', 'arrows')
-                    .each(function(d) {
-                      // let size = d[4]*10 > 5 ? d[4]*10:5
-                      let size = 7
-                      let opacity = d[4]<0.1? 0.1: d[4]
-                      let tmpG = d3.select(this).attr('transform', 'translate(' + (_this.xScale(d[0])-size/2) + ', ' + (_this.yScale(d[1])-size/2)+ ')');
-                      let arrow = appendArrow(tmpG, size, d[3]/Math.PI*180)
-                      arrow.attr('fill', 'red').attr('stroke-width', 0).attr('opacity', opacity)
-                    })
+    .selectAll('.arrows')
+    .data(arrowData)
+    .enter()
+    .append('g')
+    .attr('class', 'arrows')
+    .each(function(d) {
+      // let size = d[4]*10 > 5 ? d[4]*10:5
+      let size = 7
+      let opacity = d[4]<0.1? 0.1: d[4]
+      let tmpG = d3.select(this).attr('transform', 'translate(' + (_this.xScale(d[0])-size/2) + ', ' + (_this.yScale(d[1])-size/2)+ ')');
+      let arrow = appendArrow(tmpG, size, d[3]/Math.PI*180)
+      arrow.attr('fill', 'red').attr('stroke-width', 0).attr('opacity', opacity)
+    })
 
   // let arrows = _this.arrowContainer.selectAll('.arrow').data(arrowData, function(d) {return d[0]+'_'+d[1];})
   // arrows
@@ -396,7 +445,7 @@ StationMap.prototype.updateArrowmap = function(frameData){
   //   .each(function(d) {
   //     console.log('arrows: ', d)
   //   })
-    
+
 
   // arrows
   //   .exit()
@@ -407,14 +456,14 @@ StationMap.prototype.updateArrowmap = function(frameData){
 
   function drawPolyline(g, points){
     let line =d3.line()
-        .x(d=>d[0])
-        .y(d=>d[1])
+      .x(d=>d[0])
+      .y(d=>d[1])
     return g.append('path')
-        .datum(points)
-        .attr('d', line)
-        .attr('fill', 'none')
-        .attr('stroke', 'grey')
-        .attr('stroke-width', 2)
+      .datum(points)
+      .attr('d', line)
+      .attr('fill', 'none')
+      .attr('stroke', 'grey')
+      .attr('stroke-width', 2)
   }
 
   function appendArrow(g, size, angle){

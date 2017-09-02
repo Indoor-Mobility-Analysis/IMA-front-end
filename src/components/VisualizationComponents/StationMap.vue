@@ -1,16 +1,21 @@
 <template>
   <div class="station-map-container">
     <!--<div class="layer-select-ratio">-->
-      <!--<el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>-->
+    <!--<el-radio v-for="layerObj in mapDataArr" class="radio" v-model="floorSelect" v-bind:label="layerObj.floor" :key="layerObj.floor">Layer:{{layerObj.floor}}</el-radio>-->
     <!--</div>-->
     <div class="layer-station-map">
     </div>
+    <el-dialog :modal = "true" title="Flow Control" :visible.sync="dialogVisible" size="tiny" :before-close="handleClose">
+      <FlowControl></FlowControl>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import pipeService from '../../service/pipeService'
   import StationMap from '../../lib/StationMap'
+  import FlowControl from './FlowControl.vue'
+
   export default {
     name: 'Map',
     data(){
@@ -18,20 +23,27 @@
         title: 'Map',
         floorSelect: 0,
         mapDataArr:[],
-        stationMap: null
+        stationMap: null,
+        dialogVisible: false,
+        currentData: false,
+        mapData:false
       }
     },
     components:{
-
+      FlowControl
     },
     mounted(){
       let _this = this;
       pipeService.onMapReady(function(mapData){
+        console.log('mapdata', mapData);
         _this.mapDataArr = _this.parseMaps(mapData);
         _this.mapDataArr.forEach(function(mapObj){
           if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
           if(mapObj['floor'] == _this.floorSelect){
             _this.stationMap.setMap(mapObj);
+            _this.stationMap.onEvent('flowcontrol', function(d){
+              _this.dialogVisible = true;
+            })
           }
         })
       });
@@ -103,12 +115,20 @@
           }
         }
         return recordsObj;
+      },
+      handleClose(){
+        console.log('close');
       }
     }
   }
 </script>
 
 <style>
+
+  .el-dialog{
+    left: 35% !important;
+    top: 8% !important;
+  }
   .station-map-container{
     /*background-color: #b6b08f;*/
     height: 100%;
