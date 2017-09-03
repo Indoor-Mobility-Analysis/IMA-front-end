@@ -415,9 +415,8 @@ StationMap.prototype.updateBubblemap = function(frameData){
 StationMap.prototype.updateArrowmap = function(frameData){
   let _this = this;
   let arrowData = frameData[_this.layerId]['small_clusters'];
-
   // console.log('bubblesData: ', bubblesData);
-  _this.arrowContainer.selectAll('*').remove()
+  _this.arrowContainer.selectAll('*').remove();
   let arrows = _this.arrowContainer
     .selectAll('.arrows')
     .data(arrowData)

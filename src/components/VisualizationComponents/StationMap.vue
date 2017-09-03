@@ -5,8 +5,18 @@
     <!--</div>-->
     <div class="layer-station-map">
     </div>
-    <el-dialog :modal = "true" title="Flow Control" :visible.sync="dialogVisible" size="tiny" :before-close="handleClose">
-      <FlowControl></FlowControl>
+    <el-dialog :modal = "true" title="Flow Control" :visible.sync="dialogVisible"
+               @open="keepComponent = true"
+               @close="keepComponent = false"
+               size="tiny" >
+      <FlowControl v-if="keepComponent"
+                   :controlMaps="controlMaps"
+                   :mapId="controlMapId"
+                   :legendData="legendData"
+                   :controlFrame="controlFrame"
+
+      >
+      </FlowControl>
     </el-dialog>
   </div>
 </template>
@@ -24,9 +34,17 @@
         floorSelect: 0,
         mapDataArr:[],
         stationMap: null,
+        stationMaps: null,
         dialogVisible: false,
         currentData: false,
-        mapData:false
+        mapData:false,
+        controlMaps: null,
+        controlMapId: 0,
+        legendData: null,
+        frameData: null,
+        controlFrame: null,
+        keepComponent: true
+
       }
     },
     components:{
@@ -37,12 +55,17 @@
       pipeService.onMapReady(function(mapData){
         console.log('mapdata', mapData);
         _this.mapDataArr = _this.parseMaps(mapData);
+        _this.controlMaps = _this.mapDataArr;
         _this.mapDataArr.forEach(function(mapObj){
           if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
           if(mapObj['floor'] == _this.floorSelect){
             _this.stationMap.setMap(mapObj);
             _this.stationMap.onEvent('flowcontrol', function(d){
+              _this.controlFrame = Object.assign({},_this.frameData);
               _this.dialogVisible = true;
+              console.log('flow control');
+
+
             })
           }
         })
@@ -50,13 +73,14 @@
       pipeService.onLegendConfigReady(function(data){
         _this.legendData = data;
         if(_this.legendData && _this.stationMap && (_this.stationMap.getStationId() == _this.legendData['stationId'])){
-          console.log('create legend');
+          console.log('create legend', _this.legendData);
           _this.stationMap.setLegend(_this.legendData['legendConfig']);
         }
       });
       // Update render
       pipeService.onRenderOneFrame(function(frame){
         _this.frameData = _this.parseFrame(frame);
+
         if(_this.stationMap){
           _this.stationMap.updateHeatmapCanvas(_this.frameData);
           _this.stationMap.updateArrowmap(_this.frameData);

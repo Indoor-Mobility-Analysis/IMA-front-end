@@ -60,21 +60,15 @@
         _this.startUpdate();
       });
       pipeService.onFloorSelected(function(msg){
-//          console.log('msg', _this.currentRecord['time_stamp'])
         pipeService.emitCurrentTime(_this.currentRecord['time_stamp'])
       });
 
       this.$options.sockets.my_response = (data) => {
-        console.log('recieve data', data);
         _this.recieveData(data['data']);
-//        console.log('recieve', data)
       }
 
       window.onbeforeunload = function(e) {
-//        var dialogText = 'Dialog text here';
-//        e.returnValue = dialogText;
         _this.$socket.emit('client_depart', {'station_id': _this.stationId});
-//        return dialogText;
         var start = new Date().getTime();
         for (var i = 0; i < 1e7; i++) {
           if ((new Date().getTime() - start) > 1000){
