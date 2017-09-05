@@ -425,7 +425,7 @@ StationMap.prototype.updateArrowmap = function(frameData){
     .attr('class', 'arrows')
     .each(function(d) {
       // let size = d[4]*10 > 5 ? d[4]*10:5
-      let size = 7
+      let size = 7;
       let opacity = d[4]<0.1? 0.1: d[4]
       let tmpG = d3.select(this).attr('transform', 'translate(' + (_this.xScale(d[0])-size/2) + ', ' + (_this.yScale(d[1])-size/2)+ ')');
       let arrow = appendArrow(tmpG, size, d[3]/Math.PI*180)
@@ -485,7 +485,7 @@ StationMap.prototype.updateArrowmap = function(frameData){
     g = g.append('g');
     g.attr('transform', 'rotate(' + (360 - angle) + ' ' + size / 2 + ' ' + size / 2 + ')')
 
-    return drawPolyline(g, [[x0, y0],[x1, y1],[x2, y2],[x3, y3], [x0, y0]])
+    return drawPolyline(g, [[x0, y0],[x1, y1],[x2, y2],[x3, y3], [x0, y0]]);
   }
 };
 

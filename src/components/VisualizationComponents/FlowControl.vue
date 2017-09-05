@@ -18,6 +18,12 @@
     components:{
 
     },
+    beforeDestroy(){
+      console.log('beforeDestroy');
+    },
+    destroyed(){
+      console.log('destroy');
+    },
     mounted(){
       let _this = this;
 
@@ -37,14 +43,15 @@
       let layerFrame = frameData[0];
 
       let simulatedConfig = this.processFrameData(layerFrame);
-      this.flowControl.updatePath(frameData, simulatedConfig);
-//      console.log('framedata', simulatedConfig);
+      let frameNumber = 0;
+      this.flowControl.updateMap(frameData, simulatedConfig, frameNumber);
+
       setInterval(()=>{
+        frameNumber ++;
         this.simulateNextFrame(layerFrame, simulatedConfig);
-        this.flowControl.updateHeatmapCanvas(frameData);
-        this.flowControl.updateControl(frameData, simulatedConfig);
-        this.flowControl.updatePath(frameData, simulatedConfig);
-      }, 1000);
+        this.flowControl.updateMap(frameData, simulatedConfig, frameNumber);
+        this.flowControl.updateControl(frameData, simulatedConfig, frameNumber);
+      }, 500);
     },
     watch:{
 
@@ -57,21 +64,22 @@
         let smallClusters = layerFrame['small_clusters'];
         let gates = [];
         smallClusters.forEach(function(cluster, index){
-          if(cluster.length < 5) {
+//            这个地方可能会到值前端的cluster个数与数据库中的cluster个数不同
+          if(cluster.length < 6 || !cluster[6]) {
             console.log('Data error');
             return
           }
           let magnitude = cluster[4];
-          let cnt = cluster[cluster.length - 1];
-          magnitude2CntSC.push([magnitude, cnt]);
-          maxCp = maxCp[0] < magnitude? [magnitude, cnt]: maxCp;
+          let stepNumber = cluster[6].length;
+          magnitude2CntSC.push([magnitude, stepNumber]);
+          maxCp = maxCp[1] < stepNumber? [magnitude, stepNumber]: maxCp;
+
           let gate = cluster[5];
 
           if(gate2Clusters[gate] == undefined){
             gate2Clusters[gate] = {};
             gates.push(gate);
           }
-
           gate2Clusters[gate][index] = cluster;
         });
         let estTime = maxCp[1];

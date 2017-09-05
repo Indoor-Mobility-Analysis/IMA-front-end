@@ -10,6 +10,8 @@ let FlowControl = function(el, maps){
   this.height = this.$el.clientHeight;
   this.width = this.$el.clientWidth;
   this.isGateStatusInited = false;
+  this.clusterGlyphInited = false;
+  this.fleePathInited = false;
 };
 
 FlowControl.prototype.setMap = function(maps, mapId){
@@ -205,7 +207,12 @@ FlowControl.prototype.initHeatmapContainer = function(){
   this.heatmapInstance = h337.create(config)
   this.canvasHeatmap = this.$el.querySelector('.heatmap-canvas')
 }
+FlowControl.prototype.updateMap = function(frameData, simulatedConfig, frameNumber){
+  this.updateHeatmapCanvas(frameData);
+  this.updatePath(frameData, simulatedConfig, frameNumber);
+  this.updateClusterPosition(frameData, simulatedConfig, frameNumber);
 
+};
 
 FlowControl.prototype.updateHeatmapCanvas = function(frameData) {
   let record = frameData[this.layerId];
@@ -219,8 +226,7 @@ FlowControl.prototype.updateHeatmapCanvas = function(frameData) {
       value: record['small_clusters'][pointIdx][4],
       radius: 15*this.transform.k
     };
-
-    points.push(temp)
+    points.push(temp);
   }
 
   // heatmap data format
@@ -237,8 +243,8 @@ FlowControl.prototype.clearHeatmapCanvas = function() {
   this.heatmapInstance.setData({ max: 0, data: [] })
 };
 
-FlowControl.prototype.updateControl = function(frameData, simulatedConfig){
-  this.updateStatus(frameData, simulatedConfig);
+FlowControl.prototype.updateControl = function(frameData, simulatedConfig, frameNumber){
+  this.updateStatus(frameData, simulatedConfig, frameNumber);
   this.updateGateStatus(frameData,simulatedConfig);
 };
 
@@ -291,17 +297,26 @@ FlowControl.prototype.initStatus = function(){
   this.time = timeContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10)
 };
 
-FlowControl.prototype.updateStatus = function(frameData, simulatedConfig){
+FlowControl.prototype.updateStatus = function(frameData, simulatedConfig, frameNumber){
 
   // people count
+  let small_clusters= frameData[this.layerId]['small_clusters'];
+  let currentClusterNumber = 0;
+  small_clusters.forEach(function(cluster){
+    if(cluster[6] && cluster[6].length > frameNumber){
+      currentClusterNumber+= 1;
+    }
+  });
+
+
   let count = simulatedConfig['peopleCnt'];
   //cluster number
   let number = simulatedConfig['cNumber'];
-  // console.log('simulate config', simulatedConfig);
+
   let time = simulatedConfig['estTime'];
   //estimate time
   this.count.text(count);
-  this.number.text(number);
+  this.number.text(currentClusterNumber);
   this.time.text(time);
 };
 
@@ -359,7 +374,7 @@ FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
     text.attr('y', textBox.height);
   });
   this.gateBarConfig.barOffsetX = barOffsetX;
-  this.gateBars = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', 'grey').attr('height', barHeight + 5)
+  this.gateBars = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', '#3288bd').attr('height', barHeight + 5)
     .attr('width', 150);
   let largestGateCount = 0;
   for(let i = 0, ilen = gateIds.length; i < ilen; i++){
@@ -369,10 +384,30 @@ FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
     largestGateCount = largestGateCount < singleGateCount? singleGateCount: largestGateCount;
   }
   this.gateBarConfig.largestGateCount = largestGateCount;
-  console.log('largestGateCount',[0, largestGateCount], [0, this.width / 2 - this.gateBarConfig.barOffsetX* 2] )
+
   this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
 };
-FlowControl.prototype.updatePath = function(frameData, simulatedConfig){
+FlowControl.prototype.updatePath = function(frameData, simulatedConfig, frameNumber){
+  if(this.fleePathInited == false) {
+    this.initPath(frameData, simulatedConfig)
+    return
+  }
+  this.fleePaths.each(function(cluster){
+    let pathData = cluster[6];
+    if(!pathData) return;
+    let _path = d3.select(this).select('path');
+
+    if(frameNumber == (cluster[6].length)){
+      console.log('log', frameNumber, cluster[6].length);
+      _path.transition(500).attr('stroke','orange').attr('opacity', 1).attr('stroke-width', 3).on('end', function(d){
+        d3.select(this).transition(500).attr('stroke-width', 0).duration();
+      })
+      return
+    }
+  })
+};
+FlowControl.prototype.initPath = function(frameData, simulatedConfig){
+  //Originanl name is updatePath
   let line = d3.line().x((d)=>{
     return this.xScale(d[0]);
   }).y((d)=>{
@@ -381,12 +416,12 @@ FlowControl.prototype.updatePath = function(frameData, simulatedConfig){
   let small_clusters= frameData[this.layerId]['small_clusters'];
   this.mapComponent.selectAll('.pathContainer').remove();
   this.fleeContainer = this.mapComponent.append('g').attr('class', 'pathContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
-  let paths = this.fleeContainer.selectAll('.fleePath').data(small_clusters).enter().append('g')
-  paths.each(function(cluster){
+  this.fleePaths = this.fleeContainer.selectAll('.fleePath').data(small_clusters).enter().append('g')
+  this.fleePaths.each(function(cluster){
     d3.select(this).selectAll('path').remove();
     let _container = d3.select(this);
     let pathData = cluster[6]
-    if(cluster[7]<=0) return
+    // if(cluster[7]<=0) return
     if(!pathData)return
 
     _container.append('path')
@@ -395,21 +430,74 @@ FlowControl.prototype.updatePath = function(frameData, simulatedConfig){
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 1.5)
+      .attr('stroke-dasharray', '2,2')
+      .attr('opacity', 0.4)
       .attr("d", line);
+
   })
-  let startPoints = this.fleeContainer.selectAll('.startPoint').data(small_clusters).enter().append('circle').attr('class', 'startPoint')
-  let _this =this;
-  startPoints.each(function(d){
+  this.fleePathInited = true;
+};
+
+FlowControl.prototype.updateClusterPosition = function(frameData, simulatedConfig, frameNumber){
+  let _this = this;
+  if (this.clusterGlyphInited == false){
+    this.initClusterGlyph(frameData, frameNumber);
+    this.clusterGlyphInited = true;
+    return;
+  }
+
+  this.clusterStartPoints.each(function(d){
     if(!d[6]) return;
-    if(d[7]<=0) return
+
+
     let circle = d3.select(this);
-    circle.attr('r', 5).attr('fill','orange').attr('fill-opacity', 0.3).attr('stroke','orange')
+    if(frameNumber == (d[6].length)){
+      circle.transition(500).attr('r', 10).on('end', function(d){
+        d3.select(this).transition(500).attr('r', 0).duration();
+      })
+      return
+    }
+
+    if(frameNumber >= d[6].length) {
+      return
+    }
+    circle.transition(500)
       .attr('cx', d=>{
-        let _x = _this.xScale(d[6][0][0]);
+        let _x = _this.xScale(d[6][frameNumber][0]);
         return _x;
       })
       .attr('cy', d=>{
-        let _y = _this.yScale(d[6][0][1]);
+        let _y = _this.yScale(d[6][frameNumber][1]);
+        return _y
+      })
+
+
+  })
+};
+FlowControl.prototype.initClusterGlyph = function(frameData, frameNumber){
+
+  let small_clusters= frameData[this.layerId]['small_clusters'];
+  let _this =this;
+  this.clusterGlyphContainer = this.mapComponent.append('g').attr('class','clusterGlyphContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+
+  this.clusterStartPoints = this.clusterGlyphContainer.selectAll('.startPoint').data(small_clusters).enter().append('circle').attr('class', 'startPoint');
+  this.clusterStartPoints.each(function(d){
+    if(!d[6]) {
+      return;
+    }
+    if(d[7]<=0) {
+
+      return;
+    }
+    let circle = d3.select(this);
+    circle.attr('r', 0).transition(500).attr('r', 5).duration()
+    circle.attr('fill','orange').attr('fill-opacity', 0.3).attr('stroke','orange')
+      .attr('cx', d=>{
+        let _x = _this.xScale(d[6][frameNumber][0]);
+        return _x;
+      })
+      .attr('cy', d=>{
+        let _y = _this.yScale(d[6][frameNumber][1]);
         return _y
       });
   })
