@@ -252,20 +252,22 @@ FlowControl.prototype.updateControl = function(frameData, simulatedConfig, frame
 FlowControl.prototype.initControlConfig = function(){
   this.statusContainer = this.controlComponent.append('g').attr('class', 'all_status').attr('transform', 'translate(0,'+ ( 2) + ')');
   let stautsHeight = this.height * 0.2;
-  this.gateContainer = this.controlComponent.append('g').attr('class','gate_status').attr('transform', 'translate(0,'+ (this.height * 0.2 + 4) + ')');
-  let gateStatusHeight = this.height * 0.7;
-  this.progressContainer = this.controlComponent.append('g').attr('class', 'progress_status').attr('transform', 'translate(0,'+ (this.height * 0.9 + 6) + ')');
-  let progressHeight=  this.height * 0.1;
+
+
 
   this.statusContainer.append('rect').attr('width', this.controlWidth).attr('height', stautsHeight)
     .attr('fill', 'red').attr('fill-opacity', 0.0)
     .attr('stroke-dasharray', '5,2');
-  this.gateContainer.append('rect').attr('width', this.controlWidth).attr('height', gateStatusHeight + progressHeight)
+
+
+  this.initStatus();
+  this.statusOffsetY;
+  this.gateContainer = this.controlComponent.append('g').attr('class','gate_status').attr('transform', 'translate(0,'+ (this.statusOffsetY + 20) + ')');
+  let gateStatusHeight = this.height - this.statusOffsetY;
+  this.gateContainer.append('rect').attr('width', this.controlWidth).attr('height', gateStatusHeight - 20)
     .attr('fill', 'green').attr('fill-opacity', 0.0)
     .attr('stroke', 'orange')
     .attr('stroke-dasharray', '5,2');
-
-  this.initStatus();
 };
 
 FlowControl.prototype.initStatus = function(){
@@ -295,7 +297,8 @@ FlowControl.prototype.initStatus = function(){
   let timeBox = timeText.node().getBBox();
   statusOffsetY += (timeBox.height + gap);
   timeContainer.attr('transform','translate(15, ' + statusOffsetY + ')');
-  this.time = timeContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10)
+  this.time = timeContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10);
+  this.statusOffsetY = statusOffsetY;
 };
 
 FlowControl.prototype.updateStatus = function(frameData, simulatedConfig, frameNumber){
