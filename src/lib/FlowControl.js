@@ -224,15 +224,16 @@ FlowControl.prototype.updateHeatmapCanvas = function(frameData) {
     let temp = {
       x: Math.round((this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX)*this.transform.k+this.transform.x),
       y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])*this.transform.k+this.transform.y),
-      value: record['small_clusters'][pointIdx][4],
-      radius: 15*this.transform.k
+      value: record['small_clusters'][pointIdx][7],
+      radius: 15 * this.transform.k
     };
     points.push(temp);
   }
 
   // heatmap data format
   let data = {
-    max: 1.5,
+    max: 6,
+    blur: 1,
     data: points
   };
   // if you have a set of data points always use setData instead of addData
@@ -322,7 +323,7 @@ FlowControl.prototype.updateStatus = function(frameData, simulatedConfig, frameN
   this.count.text(count);
   this.number.text(currentClusterNumber);
   this.time.text(time);
-  console.log('update_staus', count, time)
+
 };
 
 FlowControl.prototype.updateGateStatus = function(frameData, simulatedConfig){
@@ -413,6 +414,7 @@ FlowControl.prototype.updatePath = function(frameData, simulatedConfig, frameNum
       _path.transition(500).attr('stroke','orange').attr('opacity', 1).attr('stroke-width', 3).on('end', function(d){
         d3.select(this).transition(500).attr('stroke-width', 0).duration();
       })
+
       return
     }
   })
@@ -457,15 +459,42 @@ FlowControl.prototype.updateClusterPosition = function(frameData, simulatedConfi
     return;
   }
 
-  this.clusterStartPoints.each(function(d){
+  this.clusterStartPoints.each(function(d, index){
     if(!d[6]) return;
 
 
     let circle = d3.select(this);
     if(frameNumber == (d[6].length)){
-      circle.transition(500).attr('r', 10).on('end', function(d){
+      circle.transition(1000).attr('r', 10).on('end', function(d){
         d3.select(this).transition(500).attr('r', 0).duration();
+
       })
+      let evacuation_text  = _this.svg.append('text')
+      let gate = d[5];
+      gate.replace('_', ' ');
+      gate = gate.charAt(0).toUpperCase() + gate.slice(1)
+      evacuation_text.text("Cluster " +  index + "  evacuated from " + gate).attr('x', ()=>{
+        let _x = _this.xScale(d[6][d[6].length - 1][0]);
+        return _x;
+      })
+        .attr('y', ()=>{
+          let _y = _this.yScale(d[6][d[6].length - 1][1]);
+          return _y
+        })
+        .attr('fill', '#f03b20')
+
+      evacuation_text.transition(3000)
+        .attr('x', ()=>{
+          let _x = _this.xScale(d[6][d[6].length - 1][0]);
+          return _x + 0;
+        })
+        .attr('y', ()=>{
+          let _y = _this.yScale(d[6][d[6].length - 1][1]);
+          return _y - 20;
+        })
+        .attr('fill', 'orange')
+        .style('opacity', 0)
+        .duration()
       return
     }
 

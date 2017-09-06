@@ -325,7 +325,7 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
     let temp = {
       x: Math.round((this.xScale(record['small_clusters'][pointIdx][0])+this.offsetX)*this.transform.k+this.transform.x),
       y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])*this.transform.k+this.transform.y),
-      value: record['small_clusters'][pointIdx][4],
+      value: record['small_clusters'][pointIdx][7],
       radius: 15*this.transform.k
     }
     // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
@@ -344,7 +344,9 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
 
   // heatmap data format
   let data = {
-    max: 1.5,
+    max: 6,
+    blur: 1,
+    maxOpacity: 0.5,
     data: points
   };
   // if you have a set of data points always use setData instead of addData
