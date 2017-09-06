@@ -51,6 +51,7 @@
         this.simulateNextFrame(layerFrame, simulatedConfig);
         this.flowControl.updateMap(frameData, simulatedConfig, frameNumber);
         this.flowControl.updateControl(frameData, simulatedConfig, frameNumber);
+        console.log('frameNumber',frameNumber);
       }, 500);
     },
     watch:{
@@ -113,8 +114,8 @@
           cluster[4] = cluster[4] - magDecUnit;
           cluster[4] = cluster[4] < 0? -1: cluster[4];
           cluster[cluster.length-1] = cluster[cluster.length-1] <=0? 0: cluster[cluster.length-1] - 1;
-          count+= cluster[cluster.length-1];
-          if(cluster[4]>0){clusterNumber += 1}
+          count = 0;
+
         });
         simulatedConfig['estTime'] = simulatedConfig['estTime'] <= 0? 0: simulatedConfig['estTime'] - 1;
         simulatedConfig['peopleCnt'] = count;

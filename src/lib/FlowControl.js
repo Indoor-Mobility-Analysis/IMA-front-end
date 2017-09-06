@@ -323,14 +323,14 @@ FlowControl.prototype.updateStatus = function(frameData, simulatedConfig, frameN
 FlowControl.prototype.updateGateStatus = function(frameData, simulatedConfig){
   this.initGateStatus(frameData, simulatedConfig);
 
-  this.gateBars
-    .transition(1000)
-
-    .attr('width', (gateId)=>{
-      let currentCount = this.sumClusterCount(simulatedConfig['gate2Clusters'][gateId]);
-      let w = this.gateXScale(currentCount);
-      return w
-    }).duration();
+  // this.gateBars
+  //   .transition(1000)
+  //
+  //   .attr('width', (gateId)=>{
+  //     let currentCount = this.sumClusterCount(simulatedConfig['gate2Clusters'][gateId]);
+  //     let w = this.gateXScale(currentCount);
+  //     return w
+  //   }).duration();
 };
 
 FlowControl.prototype.sumClusterCount = function(index2Clusters){
@@ -385,7 +385,7 @@ FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
   }
   this.gateBarConfig.largestGateCount = largestGateCount;
 
-  this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
+  // this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
 };
 FlowControl.prototype.updatePath = function(frameData, simulatedConfig, frameNumber){
   if(this.fleePathInited == false) {
@@ -475,20 +475,21 @@ FlowControl.prototype.updateClusterPosition = function(frameData, simulatedConfi
   })
 };
 FlowControl.prototype.initClusterGlyph = function(frameData, frameNumber){
-
+  console.log('initCLusterGlyph')
   let small_clusters= frameData[this.layerId]['small_clusters'];
   let _this =this;
   this.clusterGlyphContainer = this.mapComponent.append('g').attr('class','clusterGlyphContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
 
   this.clusterStartPoints = this.clusterGlyphContainer.selectAll('.startPoint').data(small_clusters).enter().append('circle').attr('class', 'startPoint');
   this.clusterStartPoints.each(function(d){
-    if(!d[6]) {
+    if(!d[6] || d[6] == "None") {
       return;
     }
     if(d[7]<=0) {
 
       return;
     }
+    console.log('initCLusterGlyph2')
     let circle = d3.select(this);
     circle.attr('r', 0).transition(500).attr('r', 5).duration()
     circle.attr('fill','orange').attr('fill-opacity', 0.3).attr('stroke','orange')
