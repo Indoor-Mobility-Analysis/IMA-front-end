@@ -5,7 +5,7 @@
     <!--</div>-->
     <div class="layer-station-map">
     </div>
-    <el-dialog :modal = "true" title="Flow Control" :visible.sync="dialogVisible"
+    <el-dialog :modal = "true" title="Evacuation Simulation" :visible.sync="dialogVisible"
                @open="keepComponent = true"
                @close="keepComponent = false"
                size="tiny" >
@@ -145,7 +145,9 @@
 </script>
 
 <style>
-
+  .el-dialog__body{
+    padding: 20px 15px !important;
+  }
   .el-dialog{
     left: 35% !important;
     top: 8% !important;
