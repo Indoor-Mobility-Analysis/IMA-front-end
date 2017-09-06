@@ -20,7 +20,7 @@ import VueSocketio from 'vue-socket.io'
 // let socketio = io('http://itf170b.cse.ust.hk/ima/test')
 // Vue.use(VueSocketio, 'http://localhost:5000/test')
 // Vue.use(VueSocketio, socketio)
-Vue.use(VueSocketio, "http://itf170b.cse.ust.hk/ima/test")
+Vue.use(VueSocketio, "http://itf170b.cse.ust.hk/test")
 
 // Vue.config.productionTip = false
 Vue.use(ElementUI);
