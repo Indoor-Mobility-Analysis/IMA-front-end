@@ -66,7 +66,7 @@ StationMap.prototype.addControlButton = function(){
     .attr('x', 10)
     .attr('y', 15)
     .attr('font-size', 10)
-    .text('Flow Control');
+    .text('Evacuation Simulation');
 
   var bbox = text.node().getBBox();
 
