@@ -264,10 +264,10 @@ FlowControl.prototype.initControlConfig = function(){
   this.statusOffsetY;
   this.gateContainer = this.controlComponent.append('g').attr('class','gate_status').attr('transform', 'translate(0,'+ (this.statusOffsetY + 20) + ')');
   let gateStatusHeight = this.height - this.statusOffsetY;
-  this.gateContainer.append('rect').attr('width', this.controlWidth).attr('height', gateStatusHeight - 20)
-    .attr('fill', 'green').attr('fill-opacity', 0.0)
-    .attr('stroke', 'orange')
-    .attr('stroke-dasharray', '5,2');
+  // this.gateContainer.append('rect').attr('width', this.controlWidth).attr('height', gateStatusHeight - 20)
+  //   .attr('fill', 'green').attr('fill-opacity', 0.0)
+  //   .attr('stroke', 'orange')
+  //   .attr('stroke-dasharray', '5,2');
 };
 
 FlowControl.prototype.initStatus = function(){
