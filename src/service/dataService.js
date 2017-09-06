@@ -4,11 +4,13 @@
 
 import Vue from 'vue'
 import VueResource from 'vue-resource'
+import * as Config from '../Config'
 Vue.use(VueResource)
 
 // Assume the port of the data Server is 5000, for test only
 // const dataServerUrl = "http://127.0.0.1:5000";
-const dataServerUrl = "/ima";
+// const dataServerUrl = "/ima";
+const dataServerUrl = Config.serverLink;
 
 const $http = Vue.http
 

@@ -48,10 +48,10 @@
 
       setInterval(()=>{
         frameNumber ++;
-        this.simulateNextFrame(layerFrame, simulatedConfig);
+        this.simulateNextFrame(layerFrame, simulatedConfig, frameNumber);
         this.flowControl.updateMap(frameData, simulatedConfig, frameNumber);
         this.flowControl.updateControl(frameData, simulatedConfig, frameNumber);
-        console.log('frameNumber',frameNumber);
+
       }, 500);
     },
     watch:{
@@ -61,6 +61,7 @@
       processFrameData(layerFrame){
         let magnitude2CntSC = [];
         let gate2Clusters = {};
+        let gate2Status = {};
         let maxCp = [-1, null];
         let smallClusters = layerFrame['small_clusters'];
         let gates = [];
@@ -81,6 +82,10 @@
             gate2Clusters[gate] = {};
             gates.push(gate);
           }
+          if(gate2Status[gate] == undefined){
+            gate2Status[gate] = {'allCount': 0, 'currentCount': 0}
+          }
+          gate2Status[gate].allCount += cluster[7]
           gate2Clusters[gate][index] = cluster;
         });
         let estTime = maxCp[1];
@@ -91,34 +96,47 @@
         let simulatedConfig = {
           'estTime': maxCp[1],
           'magDecUnit': magDecUnit,
-          'peopleCnt': layerFrame['ppl_cnt'],
+          'peopleCnt': 0,
           'cNumber': smallClusters.length,
           'gate2Clusters': gate2Clusters,
+          'gate2Status': gate2Status,
           'gateIds': gates
         };
 
         return simulatedConfig
       },
-      simulateNextFrame(layerFrame, simulatedConfig){
+      simulateNextFrame(layerFrame, simulatedConfig, frameNumber){
         let smallClusters = layerFrame["small_clusters"];
         let magDecUnit = simulatedConfig['magDecUnit'];
 //        people count
         let count = 0;
         let clusterNumber = 0;
         simulatedConfig['gates'] = {};
-        smallClusters.forEach(function(cluster){
-          if(cluster.length < 5){
-            console.log('Data error');
-            return
-          }
-          cluster[4] = cluster[4] - magDecUnit;
-          cluster[4] = cluster[4] < 0? -1: cluster[4];
-          cluster[cluster.length-1] = cluster[cluster.length-1] <=0? 0: cluster[cluster.length-1] - 1;
-          count = 0;
+//        smallClusters.forEach(function(cluster){
+//          if(cluster.length < 5){
+//            console.log('Data error');
+//            return
+//          }
+//          cluster[4] = cluster[4] - magDecUnit;
+//          cluster[4] = cluster[4] < 0? -1: cluster[4];
+//          count = 0;
+//        });
 
+        for(let gate in simulatedConfig['gate2Status']){
+            simulatedConfig['gate2Status'][gate]['currentCount'] = 0;
+            simulatedConfig['peopleCnt'] = 0;
+        }
+        smallClusters.forEach(function(cluster){
+          let gate = cluster[5];
+          if(!cluster[6]) return
+          if(frameNumber <= cluster[6].length){ //If frame number < cluster[6].length, the cluster is still existed!
+              simulatedConfig['gate2Status'][gate]['currentCount'] += cluster[7];
+              simulatedConfig['peopleCnt'] += cluster[7];
+          }
         });
+
         simulatedConfig['estTime'] = simulatedConfig['estTime'] <= 0? 0: simulatedConfig['estTime'] - 1;
-        simulatedConfig['peopleCnt'] = count;
+
         simulatedConfig['cNumber'] = clusterNumber;
       }
     }
@@ -127,7 +145,7 @@
 
 <style scoped>
   .flow-control{
-    height: 700px;
+    height: 70vh;
   }
   .container{
     height: 100%;

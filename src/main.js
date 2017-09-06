@@ -13,14 +13,19 @@ import Icon from 'vue-awesome/components/Icon'
 // Set language for Elements, timepicker
 import lang from 'element-ui/lib/locale/lang/en'
 import locale from 'element-ui/lib/locale'
+import * as Config from './Config'
+
 locale.use(lang)
 
 import VueSocketio from 'vue-socket.io'
-// import io from 'socket.io-client'
-// let socketio = io('http://itf170b.cse.ust.hk/ima/test')
-// Vue.use(VueSocketio, 'http://localhost:5000/test')
-// Vue.use(VueSocketio, socketio)
-Vue.use(VueSocketio, "http://itf170b.cse.ust.hk/test")
+
+if(Config.serverLink == "/ima"){
+  Vue.use(VueSocketio, "http://itf170b.cse.ust.hk/test")
+}else{
+  Vue.use(VueSocketio, 'http://localhost:5000/test')
+}
+
+
 
 // Vue.config.productionTip = false
 Vue.use(ElementUI);

@@ -134,7 +134,8 @@ FlowControl.prototype.renderMap = function(){
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
     .attr('d', elePath)
-    .attr('fill', 'none')
+    .attr('fill', 'steelblue')
+    .attr('fill-opacity',0.1)
     .attr('stroke', 'steelblue')
     .attr('stroke-width', 0.3)
     .attr('stroke-opacity', 0.4)
@@ -318,29 +319,22 @@ FlowControl.prototype.updateStatus = function(frameData, simulatedConfig, frameN
   this.count.text(count);
   this.number.text(currentClusterNumber);
   this.time.text(time);
+  console.log('update_staus', count, time)
 };
 
 FlowControl.prototype.updateGateStatus = function(frameData, simulatedConfig){
   this.initGateStatus(frameData, simulatedConfig);
 
-  // this.gateBars
-  //   .transition(1000)
-  //
-  //   .attr('width', (gateId)=>{
-  //     let currentCount = this.sumClusterCount(simulatedConfig['gate2Clusters'][gateId]);
-  //     let w = this.gateXScale(currentCount);
-  //     return w
-  //   }).duration();
+  this.gateBarsForExisted
+    .transition(1000)
+
+    .attr('width', (gateId)=>{
+      let currentCount = simulatedConfig['gate2Status'][gateId]['currentCount'];
+      let w = this.gateXScale(currentCount);
+      return w
+    }).duration();
 };
 
-FlowControl.prototype.sumClusterCount = function(index2Clusters){
-  let singleGateCount = 0;
-  for(let index in index2Clusters){
-    let cluster = index2Clusters[index];
-    singleGateCount += cluster[cluster.length - 1];
-  }
-  return singleGateCount;
-};
 
 FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
   if(this.isGateStatusInited){
@@ -350,13 +344,15 @@ FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
   this.isGateStatusInited = true;
   let gateIds = simulatedConfig['gateIds'];
   let gate2Clusters = simulatedConfig['gate2Clusters'];
+  let gateStatus = simulatedConfig['gate2Status'];
   let statusOffsetX = 15;
   let gap = 30;
   let statusOffsetY = 20;
   let offsetY = 30;
   let rowHeight = 45;
 
-  let title = this.gateContainer.append('text').text('Gate Status:').attr('x', 5).attr('font-size', 20);
+
+  let title = this.gateContainer.append('text').text('Gate Status:').attr('x', 5).attr('font-size', 22)
   title.attr('y', title.node().getBBox().height + 5);
   this.gateStatusContainers  = this.gateContainer.selectAll('.gateStatusContainer')
     .data(gateIds).enter().append('g').attr('class', 'gateStatusContainer')
@@ -367,25 +363,38 @@ FlowControl.prototype.initGateStatus = function(frameData, simulatedConfig){
   let barHeight = 0;
   this.gateStatusContainers.each(function(label){
     let _container = d3.select(this);
-    let text = _container.append('text').text(label);
+    let _label = label.replace('_', ' ');
+    _label = _label.charAt(0).toUpperCase() + _label.slice(1)
+    let text = _container.append('text').text(_label);
     let textBox = text.node().getBBox();
     barOffsetX = barOffsetX < (statusOffsetX + textBox.width)? (statusOffsetX + textBox.width): barOffsetX;
     barHeight = barHeight < textBox.height? textBox.height: barHeight;
     text.attr('y', textBox.height);
   });
   this.gateBarConfig.barOffsetX = barOffsetX;
-  this.gateBars = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', '#3288bd').attr('height', barHeight + 5)
-    .attr('width', 150);
+
+
   let largestGateCount = 0;
   for(let i = 0, ilen = gateIds.length; i < ilen; i++){
     let gateId = gateIds[i];
-    let index2Clusters = gate2Clusters[gateId];
-    let singleGateCount = this.sumClusterCount(index2Clusters);
+    let singleGateCount = gateStatus[gateId]['currentCount'];
+
     largestGateCount = largestGateCount < singleGateCount? singleGateCount: largestGateCount;
   }
   this.gateBarConfig.largestGateCount = largestGateCount;
 
-  // this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
+  this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
+  this.gateBarsForAll = this.gateStatusContainers.append('rect').attr('x', barOffsetX)
+    .attr('fill','#B0E0E6')
+    .attr('stroke', '#4790de').attr('stroke-width', 2)
+    .attr('height', barHeight + 5)
+    .attr('width', (gateId)=> {
+      let allCount = simulatedConfig['gate2Status'][gateId]['allCount'];
+      let w = this.gateXScale(allCount);
+      return w;
+    })
+  this.gateBarsForExisted = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', '#f4979c').attr('height', barHeight + 5)
+    .attr('stroke-width',2).attr('stroke-opacity',0.0)
 };
 FlowControl.prototype.updatePath = function(frameData, simulatedConfig, frameNumber){
   if(this.fleePathInited == false) {
@@ -398,7 +407,6 @@ FlowControl.prototype.updatePath = function(frameData, simulatedConfig, frameNum
     let _path = d3.select(this).select('path');
 
     if(frameNumber == (cluster[6].length)){
-      console.log('log', frameNumber, cluster[6].length);
       _path.transition(500).attr('stroke','orange').attr('opacity', 1).attr('stroke-width', 3).on('end', function(d){
         d3.select(this).transition(500).attr('stroke-width', 0).duration();
       })
@@ -426,10 +434,10 @@ FlowControl.prototype.initPath = function(frameData, simulatedConfig){
 
     _container.append('path')
       .datum(cluster[6]).attr("fill", "none")
-      .attr("stroke", "steelblue")
+      .attr("stroke", "#15bd5c")
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
+      .attr("stroke-width", 2)
       .attr('stroke-dasharray', '2,2')
       .attr('opacity', 0.4)
       .attr("d", line);

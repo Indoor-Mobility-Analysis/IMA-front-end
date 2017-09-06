@@ -134,7 +134,7 @@
         time_stamp += timeGap;
       },
       recieveData(recordObj){
-        console.log('recieve', recordObj);
+//        console.log('recieve', recordObj);
         let _this = this;
         let people_activity = recordObj['people_activity'];
         let ticket_record = recordObj['ticket_record'];

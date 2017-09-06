@@ -63,9 +63,6 @@
             _this.stationMap.onEvent('flowcontrol', function(d){
               _this.controlFrame = Object.assign({},_this.frameData);
               _this.dialogVisible = true;
-              console.log('flow control');
-
-
             })
           }
         })
