@@ -16,9 +16,11 @@ import locale from 'element-ui/lib/locale'
 locale.use(lang)
 
 import VueSocketio from 'vue-socket.io'
+import io from 'socket.io-client'
+// let socketio = io('http://itf170b.cse.ust.hk/test')
 // Vue.use(VueSocketio, 'http://localhost:5000/test')
-Vue.use(VueSocketio, 'http://itf170b.cse.ust.hk:5000/test')
-// Vue.use(VueSocketio, 'http://itf170b.cse.ust.hk/ima/test')
+// Vue.use(VueSocketio, socketio)
+Vue.use(VueSocketio, 'http://itf170b.cse.ust.hk/test')
 
 // Vue.config.productionTip = false
 Vue.use(ElementUI);
