@@ -16,7 +16,8 @@ import locale from 'element-ui/lib/locale'
 locale.use(lang)
 
 import VueSocketio from 'vue-socket.io'
-Vue.use(VueSocketio, 'http://localhost:5000/test')
+// Vue.use(VueSocketio, 'http://localhost:5000/test')
+Vue.use(VueSocketio, 'ima/test')
 
 // Vue.config.productionTip = false
 Vue.use(ElementUI);

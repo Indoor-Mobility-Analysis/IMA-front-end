@@ -7,8 +7,8 @@ import VueResource from 'vue-resource'
 Vue.use(VueResource)
 
 // Assume the port of the data Server is 5000, for test only
-const dataServerUrl = "http://127.0.0.1:5000";
-// const dataServerUrl = "/ima";
+// const dataServerUrl = "http://127.0.0.1:5000";
+const dataServerUrl = "/ima";
 
 const $http = Vue.http
 
