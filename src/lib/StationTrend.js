@@ -98,11 +98,14 @@ StationTrend.prototype.initContainer = function(){
 
     gTmp.append("text")
       .attr('x', this.width/2)
-      .attr("y", 0)
+      .attr("y", 10)
       .attr('text-anchor', 'middle')
       .attr("dy", ".35em")
+      .attr('opacity', 0.8)
       .text(this.groups[idx]['name'])
-
+      .style('font-family', 'Helvetica Neue')
+      .style('font-weight', 'bold')
+      
     let xTmp = gTmp.append('g')
       .attr('class', 'x axis idx_'+idx)
       .attr('transform', 'translate(0,' + (this.floorHeight-floorTopMargin-floorBottomMargin) + ')')
