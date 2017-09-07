@@ -14,16 +14,19 @@ let StationTrend = function(el){
   this.groups = [
     {
       'floor': 0,
+      'name': 'Floor G',
       'color':'orange', 
       'data': d3.range(this.limit).map(function(){return 0;})
     },
     {
       'floor': -1,
+      'name': 'Floor LG1',
       'color':'green', 
       'data': d3.range(this.limit).map(function(){return 0;})
     },
     {
       'floor': -2,
+      'name': 'Floor LG2',
       'color':'grey', 
       'data': d3.range(this.limit).map(function(){return 0;})
     }
@@ -76,6 +79,7 @@ StationTrend.prototype.initContainer = function(){
   this.yList = [];
   this.barList = [];
   this.pathList = [];
+
   for(let idx=0; idx<this.groups.length; idx++){
 
     let rectTmp = this.svg.append('g')
@@ -91,6 +95,13 @@ StationTrend.prototype.initContainer = function(){
     let gTmp = this.svg.append('g')
       .attr('class', 'g idx_'+idx)
       .attr('transform', 'translate(' + (this.margin.left)+','+((this.floorHeight*idx)+floorTopMargin) + ')');
+
+    gTmp.append("text")
+      .attr('x', this.width/2)
+      .attr("y", 0)
+      .attr('text-anchor', 'middle')
+      .attr("dy", ".35em")
+      .text(this.groups[idx]['name'])
 
     let xTmp = gTmp.append('g')
       .attr('class', 'x axis idx_'+idx)
