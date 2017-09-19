@@ -4,7 +4,8 @@
 </template>
 
 <script>
-  import FlowControl from '../../lib/FlowControl'
+  // import FlowControl from '../../lib/FlowControl'
+  import FlowControl from '../../lib/StationMap'
 
   export default {
     name: 'flowcontrol',
@@ -12,7 +13,8 @@
     data(){
       return {
         title: 'flowcontrol',
-
+        drawContainerClass: 'layer-station-map_control',
+        type: 'control'
       }
     },
     components:{
@@ -33,7 +35,7 @@
         return
       }
 
-      this.flowControl = new FlowControl(this.$el);
+      this.flowControl = new FlowControl(this.$el, this.drawContainerClass, this.type);
       this.flowControl.setMap(this.controlMaps, this.mapId);
       this.flowControl.setLegend(this.legendData['legendConfig']);
       this.flowControl.updateHeatmapCanvas(frameData);

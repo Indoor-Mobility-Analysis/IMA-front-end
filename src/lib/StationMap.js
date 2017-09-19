@@ -4,44 +4,39 @@
 import * as d3 from "d3";
 import h337 from "heatmap.js";
 
-let StationMap = function(el, maps){
+let StationMap = function(el, drawContainerClass, type){
   this.$el = el;
+  this.drawContainerClass = drawContainerClass;
+  this.type = type
+  this.height = this.$el.clientHeight;
+  this.width = this.$el.clientWidth;
 
-  // this.height = el.clientHeight;
-  // this.width = el.clientWidth;
-
-  // add a div 'layer-station-map' for embedding heatmap canvas
-  this.height = d3.select('.layer-station-map').node().getBoundingClientRect().height - 30;
-  this.width = d3.select('.layer-station-map').node().getBoundingClientRect().width ;
-
-  this.margin = {top: 5, left: 5, right:5 ,bottom: 5};
-
-  this.maps = maps;
-  this.widthPerSvg = (this.width - this.margin.left - this.margin.right)
-  this.heightPerSvg = this.height - this.margin.top - this.margin.bottom;
-
-  this.mapAttr = {};
-  this.xScale = undefined;
-  this.yScale = undefined;
-  this.reXScale = undefined;
-  this.reYScale = undefined;
-
-  this.offsetX = undefined;
-  this.offsetY = 0;
+  if(this.type == 'control') {
+    this.isGateStatusInited = false;
+    this.clusterGlyphInited = false;
+    this.fleePathInited = false;
+  }
 };
 
-StationMap.prototype.setMap = function(mapObj){
-  console.log('layer_id', mapObj['floor']);
+StationMap.prototype.setMap = function(maps, mapId){
+  let mapObj = maps[mapId];
+
   this.layerId = mapObj['floor'];
   this.stationId = mapObj['stationId'];
   this.map = mapObj['map'];
+  this.maps = maps;
   this.transform = {k: 1, x: 0, y:0};
+
   this.initContainer();
+  if(this.type === 'control') {
+    this.initControlConfig();
+  }
   this.renderMap();
   this.initHeatmapContainer();
 };
+
 StationMap.prototype.onEvent = function(event, func){
-  if(event == 'flowcontrol'){
+  if(event == 'flowControl'){
     this.flowControl = func;
   }
 }
@@ -89,36 +84,42 @@ StationMap.prototype.addControlButton = function(){
 };
 StationMap.prototype.initContainer = function(){
 
-  d3.select(this.$el).selectAll('.layer-station-map').remove();
+  d3.select(this.$el).selectAll('.'+this.drawContainerClass).remove();
+
   this.divContainer = d3.select(this.$el)
     .append('div')
-    .attr('class', 'layer-station-map')
+    .attr('class', this.drawContainerClass)
     .style('border-style', 'dashed')
     .style('border-color','#777')
     .style('border-width', '0.1px')
     .style('border-opacity', 0.3)
-
-  // console.log('this.$el: ', this.$el);
-  // console.log('this.divContainer : ', this.divContainer.node());
-
+    .attr('height', this.height)
+    .attr('width', this.width);
 
   // to make the svg and canvas have same height and width, we use this.height, and this.width.
   this.svg = this.divContainer
     .append('svg')
     .attr('class', 'navmapcontainer')
-    .attr('height', this.height)
+    .attr('height', (this.type == 'origin')?this.height:this.height+6)
     .attr('width', this.width)
 
-  if(this.layerId == 0)
+  if(this.type == 'origin' && this.layerId == 0)
     this.addControlButton();
 
   this.rootContainer = this.svg.append('g').attr('class', 'rootContainer');
+  if(this.type == 'control') {
+    this.mapComponent = this.rootContainer
+    this.mapWidth = this.width * 0.5;
+    this.controlComponent = this.svg.append('g').attr('transform', 'translate(' + this.mapWidth + ',0)')
+    this.controlWidth = this.width * 0.5;
+  }
 
   var largestX = 0;
   var largestY = 0;
 
   var smallestX = 10000;
   var smallestY = 10000;
+  this.mapAttr = {};
 
   this.maps.forEach(function(meshes){
     let meshElements = meshes['map'];
@@ -137,13 +138,12 @@ StationMap.prototype.initContainer = function(){
   this.mapAttr['smallestX'] = smallestX;
   this.mapAttr['largestY'] = largestY;
   this.mapAttr['smallestY'] = smallestY;
-  console.log('test', this.mapAttr);
 };
 
 StationMap.prototype.renderMap = function(){
   let _this = this;
-
-  // console.log('this.mapAttr', this.mapAttr);
+  this.widthPerSvg = this.width * (this.type == 'control'?0.5:1)
+  this.heightPerSvg = this.height
 
   var largestX = this.mapAttr['largestX'];
   var smallestX = this.mapAttr['smallestX'];
@@ -174,61 +174,29 @@ StationMap.prototype.renderMap = function(){
     .x(function(d) { return _this.xScale(d[0]); })
     .y(function(d) { return _this.yScale(d[1]); });
 
-
-  // let brushended = function(){
-  //   let layer = _this.layerId;
-  //   var s = d3.event.selection;
-  //   if(!s) return;
-
-  //   let xRange = [_this.xScale.invert(s[0][0]), _this.xScale.invert(s[1][0])];
-  //   let yRange = [_this.yScale.invert(s[0][1]), _this.yScale.invert(s[1][1])];
-  //   let selectionWidth = Math.abs(s[1][0] - s[0][0]);
-  //   let selectionHeight = Math.abs(s[0][1] - s[1][1]);
-
-  //   if(_this.brushEndCallback){
-  //     // _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight, layerObj, map, _this.legendConfig['legendConfig'][layer]);
-  //     _this.brushEndCallback(xRange, yRange, selectionWidth, selectionHeight,_this.map, _this.layerId,_this.legendConfig[_this.layerId]);
-  //   }
-
-  // }
-  // let brush = d3.brush()
-  //   .extent([[0,0], [_tempWidth, _tempHeight]])
-  //   .on('start', function(){
-  //     if(_this.brushStartCallBack){
-  //       _this.brushStartCallBack(_this.layerId);
-  //     }
-  //   })
-  //   .on("end", brushended);
-
-  // this.brush = brush;
-
+  
   this.layerContainer = this.rootContainer.append('g').attr('class','mapContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
 
-  // Add interactions
-  this.svg.call(d3.zoom()
-    .scaleExtent([1 / 2, 8])
-    .on("zoom", zoomed))
+  if (this.type == 'origin') {
+    // Add interactions
+    this.svg.call(d3.zoom()
+      .scaleExtent([1 / 2, 8])
+      .on("zoom", zoomed))
 
-  function zoomed() {
-    _this.clearHeatmapCanvas();
-    _this.rootContainer.attr("transform", d3.event.transform);
-    _this.transform = d3.event.transform;
-    // console.log('d3.event.transform: ', d3.event.transform);
+    function zoomed() {
+      _this.clearHeatmapCanvas();
+      _this.rootContainer.attr("transform", d3.event.transform);
+      _this.transform = d3.event.transform;
+      // console.log('d3.event.transform: ', d3.event.transform);
+    }
   }
-
-  // var drag = d3.behavior.drag()
-  //   .origin(function(d) { return d; })
-  //   .on("dragstart", dragstarted)
-  //   .on("drag", dragged)
-  //   .on("dragend", dragended);
-
 
   let meshes = this.map;
   this.layerContainer.selectAll('.mapele').data(meshes).enter()
     .append('path').attr('class', 'mapele')
     .attr('d', elePath)
     .attr('fill', 'steelblue')
-    .attr('fill-opacity', 0.2)
+    .attr('fill-opacity', (this.type == 'origin')?0.2:0.1)
     .attr('stroke', 'steelblue')
     .attr('stroke-width', 0.3)
     .attr('stroke-opacity', 0.4)
@@ -241,17 +209,6 @@ StationMap.prototype.renderMap = function(){
   // arrow container
   this.arrowContainer = this.rootContainer.append('g').attr('class', 'arrowContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
 };
-
-// StationMap.prototype.on = function(event, callback){
-//   if(event == 'brushend'){
-//     this.brushEndCallback = callback;
-//   }else if(event == 'brushstart'){
-//     this.brushStartCallBack = callback;
-//   }
-// };
-// StationMap.prototype.clearBrush = function(){
-//   this.layerContainer.call(this.brush.move, null);
-// }
 
 StationMap.prototype.setLegend = function(legendConfig){
   let _this = this;
@@ -327,20 +284,9 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
       y: Math.round(this.yScale(record['small_clusters'][pointIdx][1])*this.transform.k+this.transform.y),
       value: record['small_clusters'][pointIdx][7],
       radius: 15*this.transform.k
-    }
-    // if (temp.x < this.margin.left || temp.x > this.width + this.margin.left) continue
-    // if (temp.y < this.margin.top || temp.y > this.height + this.margin.top) continue
+    };
     points.push(temp)
   }
-
-  // let nuConfig = {
-  //   radius: 30*this.transform.k,
-  //   maxOpacity: 0.5,
-  //   minOpacity: 0,
-  //   blur: 0.75
-  // };
-
-  // this.heatmapInstance.configure(nuConfig)
 
   // heatmap data format
   let data = {
@@ -358,15 +304,11 @@ StationMap.prototype.clearHeatmapCanvas = function() {
   this.heatmapInstance.setData({ max: 0, data: [] })
 };
 
-
 // bubblemap Part
 StationMap.prototype.updateBubblemap = function(frameData){
   let _this = this;
   // need to parser renderData
-  // console.log('layerId: ', _this.layerId);
-  // console.log('updateBubblemap: ', frameData);
   let bubblesData = frameData[_this.layerId]['big_clusters'];
-  // console.log('bubblesData: ', bubblesData);
   let bubbles = _this.bubbleContainer.selectAll('circle').data(bubblesData, function(d) {return d[0]+'_'+d[1];})
 
   bubbles
@@ -435,27 +377,6 @@ StationMap.prototype.updateArrowmap = function(frameData){
       arrow.attr('fill', 'red').attr('stroke-width', 0).attr('opacity', opacity)
     })
 
-  // let arrows = _this.arrowContainer.selectAll('.arrow').data(arrowData, function(d) {return d[0]+'_'+d[1];})
-  // arrows
-  //   .transition()
-
-  // arrows
-  //   .enter()
-  //   .append('g')
-  //   .attr()
-  //   .attr('class', 'arrow')
-  //   .each(function(d) {
-  //     console.log('arrows: ', d)
-  //   })
-
-
-  // arrows
-  //   .exit()
-  //   .transition()
-  //   .attr('fill', 'blue')
-  //   .attr('r', 0)
-  //   .remove();
-
   function drawPolyline(g, points){
     let line =d3.line()
       .x(d=>d[0])
@@ -490,6 +411,307 @@ StationMap.prototype.updateArrowmap = function(frameData){
 
     return drawPolyline(g, [[x0, y0],[x1, y1],[x2, y2],[x3, y3], [x0, y0]]);
   }
+};
+
+
+////////////////////////////////////////////////////////
+//////////////  below are all for control
+////////////////////////////////////////////////////////
+StationMap.prototype.updateMap = function(frameData, simulatedConfig, frameNumber){
+  this.updateHeatmapCanvas(frameData);
+  this.updatePath(frameData, simulatedConfig, frameNumber);
+  this.updateClusterPosition(frameData, simulatedConfig, frameNumber);
+
+};
+
+StationMap.prototype.updateControl = function(frameData, simulatedConfig, frameNumber){
+  this.updateStatus(frameData, simulatedConfig, frameNumber);
+  this.updateGateStatus(frameData,simulatedConfig);
+};
+
+StationMap.prototype.initControlConfig = function(){
+  this.statusContainer = this.controlComponent.append('g').attr('class', 'all_status').attr('transform', 'translate(0,'+ ( 2) + ')');
+  let stautsHeight = this.height * 0.2;
+  this.statusContainer.append('rect').attr('width', this.controlWidth).attr('height', stautsHeight)
+    .attr('fill', 'red').attr('fill-opacity', 0.0)
+    .attr('stroke-dasharray', '5,2');
+  this.initStatus();
+  this.statusOffsetY;
+  this.gateContainer = this.controlComponent.append('g').attr('class','gate_status').attr('transform', 'translate(0,'+ (this.statusOffsetY + 20) + ')');
+  let gateStatusHeight = this.height - this.statusOffsetY;
+};
+
+StationMap.prototype.initStatus = function(){
+  let statusOffsetX = 10;
+  let gap = 15;
+  let statusOffsetY = 45;
+  let statusText = this.statusContainer.append('text').text('Status: ').attr('font-size', 20);
+  statusText.attr('y', statusText.node().getBBox().height + 5);
+
+  let numberContainer = this.statusContainer.append('g');
+  let numberText = numberContainer.append('text').text("Cluster Number:");
+  let numberBox = numberText.node().getBBox();
+  statusOffsetY +=  numberBox.height;
+  numberContainer.attr('transform','translate(15, ' + statusOffsetY + ')');
+  this.number = numberContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10)
+
+  let countContainer = this.statusContainer.append('g');
+  let countText = countContainer.append('text').text("Current Count:");
+
+  let countBox = countText.node().getBBox();
+  statusOffsetY += (countBox.height + gap);
+  countContainer.attr('transform','translate(15, ' + statusOffsetY + ')');
+  this.count = countContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10)
+
+  let timeContainer = this.statusContainer.append('g');
+  let timeText = timeContainer.append('text').text("Estimate Time:");
+  let timeBox = timeText.node().getBBox();
+  statusOffsetY += (timeBox.height + gap);
+  timeContainer.attr('transform','translate(15, ' + statusOffsetY + ')');
+  this.time = timeContainer.append('text').text('').attr('x', numberBox.width + statusOffsetX + 10);
+  this.statusOffsetY = statusOffsetY;
+};
+
+StationMap.prototype.updateStatus = function(frameData, simulatedConfig, frameNumber){
+
+  // people count
+  let small_clusters= frameData[this.layerId]['small_clusters'];
+  let currentClusterNumber = 0;
+  small_clusters.forEach(function(cluster){
+    if(cluster[6] && cluster[6].length > frameNumber){
+      currentClusterNumber+= 1;
+    }
+  });
+
+
+  let count = simulatedConfig['peopleCnt'];
+  //cluster number
+  let number = simulatedConfig['cNumber'];
+
+  let time = simulatedConfig['estTime'];
+  //estimate time
+  this.count.text(count);
+  this.number.text(currentClusterNumber);
+  this.time.text(time);
+
+};
+
+StationMap.prototype.updateGateStatus = function(frameData, simulatedConfig){
+  this.initGateStatus(frameData, simulatedConfig);
+
+  this.gateBarsForExisted
+    .transition(1000)
+
+    .attr('width', (gateId)=>{
+      let currentCount = simulatedConfig['gate2Status'][gateId]['currentCount'];
+      let w = this.gateXScale(currentCount);
+      return w
+    }).duration();
+};
+
+
+StationMap.prototype.initGateStatus = function(frameData, simulatedConfig){
+  if(this.isGateStatusInited){
+    return;
+  }
+  this.gateBarConfig = {};
+  this.isGateStatusInited = true;
+  let gateIds = simulatedConfig['gateIds'];
+  let gate2Clusters = simulatedConfig['gate2Clusters'];
+  let gateStatus = simulatedConfig['gate2Status'];
+  let statusOffsetX = 15;
+  let gap = 30;
+  let statusOffsetY = 20;
+  let offsetY = 30;
+  let rowHeight = 45;
+
+
+  let title = this.gateContainer.append('text').text('Gate Status:').attr('x', 5).attr('font-size', 22)
+  title.attr('y', title.node().getBBox().height + 5);
+  this.gateStatusContainers  = this.gateContainer.selectAll('.gateStatusContainer')
+    .data(gateIds).enter().append('g').attr('class', 'gateStatusContainer')
+    .attr('transform', function(d, i){
+      return 'translate(' + statusOffsetX +',' + (statusOffsetY + rowHeight * i + gap) + ')'
+    });
+  let barOffsetX = 0;
+  let barHeight = 0;
+  this.gateStatusContainers.each(function(label){
+    let _container = d3.select(this);
+    let _label = label.replace('_', ' ');
+    _label = _label.charAt(0).toUpperCase() + _label.slice(1)
+    let text = _container.append('text').text(_label);
+    let textBox = text.node().getBBox();
+    barOffsetX = barOffsetX < (statusOffsetX + textBox.width)? (statusOffsetX + textBox.width): barOffsetX;
+    barHeight = barHeight < textBox.height? textBox.height: barHeight;
+    text.attr('y', textBox.height);
+  });
+  this.gateBarConfig.barOffsetX = barOffsetX;
+
+
+  let largestGateCount = 0;
+  for(let i = 0, ilen = gateIds.length; i < ilen; i++){
+    let gateId = gateIds[i];
+    let singleGateCount = gateStatus[gateId]['currentCount'];
+
+    largestGateCount = largestGateCount < singleGateCount? singleGateCount: largestGateCount;
+  }
+  this.gateBarConfig.largestGateCount = largestGateCount;
+
+  this.gateXScale = d3.scaleLinear().domain([0, largestGateCount]).range([0, this.width / 2 - this.gateBarConfig.barOffsetX* 2]);
+  this.gateBarsForAll = this.gateStatusContainers.append('rect').attr('x', barOffsetX)
+    .attr('fill','#B0E0E6')
+    .attr('stroke', '#4790de').attr('stroke-width', 2)
+    .attr('height', barHeight + 5)
+    .attr('width', (gateId)=> {
+      let allCount = simulatedConfig['gate2Status'][gateId]['allCount'];
+      let w = this.gateXScale(allCount);
+      return w;
+    })
+  this.gateBarsForExisted = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', '#f4979c').attr('height', barHeight + 5)
+    .attr('stroke-width',2).attr('stroke-opacity',0.0)
+};
+StationMap.prototype.updatePath = function(frameData, simulatedConfig, frameNumber){
+  if(this.fleePathInited == false) {
+    this.initPath(frameData, simulatedConfig)
+    return
+  }
+  this.fleePaths.each(function(cluster){
+    let pathData = cluster[6];
+    if(!pathData) return;
+    let _path = d3.select(this).select('path');
+
+    if(frameNumber == (cluster[6].length)){
+      _path.transition(500).attr('stroke','orange').attr('opacity', 1).attr('stroke-width', 3).on('end', function(d){
+        d3.select(this).transition(500).attr('stroke-width', 0).duration();
+      })
+
+      return
+    }
+  })
+};
+StationMap.prototype.initPath = function(frameData, simulatedConfig){
+  //Originanl name is updatePath
+  let line = d3.line().x((d)=>{
+    return this.xScale(d[0]);
+  }).y((d)=>{
+    return this.yScale(d[1]);
+  })
+  let small_clusters= frameData[this.layerId]['small_clusters'];
+  this.mapComponent.selectAll('.pathContainer').remove();
+  this.fleeContainer = this.mapComponent.append('g').attr('class', 'pathContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+  this.fleePaths = this.fleeContainer.selectAll('.fleePath').data(small_clusters).enter().append('g')
+  this.fleePaths.each(function(cluster){
+    d3.select(this).selectAll('path').remove();
+    let _container = d3.select(this);
+    let pathData = cluster[6]
+    // if(cluster[7]<=0) return
+    if(!pathData)return
+
+    _container.append('path')
+      .datum(cluster[6]).attr("fill", "none")
+      .attr("stroke", "#15bd5c")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2)
+      .attr('stroke-dasharray', '2,2')
+      .attr('opacity', 0.4)
+      .attr("d", line);
+
+  })
+  this.fleePathInited = true;
+};
+
+StationMap.prototype.updateClusterPosition = function(frameData, simulatedConfig, frameNumber){
+  let _this = this;
+  if (this.clusterGlyphInited == false){
+    this.initClusterGlyph(frameData, frameNumber);
+    this.clusterGlyphInited = true;
+    return;
+  }
+
+  this.clusterStartPoints.each(function(d, index){
+    if(!d[6]) return;
+
+
+    let circle = d3.select(this);
+    if(frameNumber == (d[6].length)){
+      circle.transition(1000).attr('r', 10).on('end', function(d){
+        d3.select(this).transition(500).attr('r', 0).duration();
+
+      })
+      let evacuation_text  = _this.svg.append('text')
+      let gate = d[5];
+      gate.replace('_', ' ');
+      gate = gate.charAt(0).toUpperCase() + gate.slice(1)
+      evacuation_text.text("Cluster " +  index + "  evacuated from " + gate).attr('x', ()=>{
+        let _x = _this.xScale(d[6][d[6].length - 1][0]);
+        return _x;
+      })
+        .attr('y', ()=>{
+          let _y = _this.yScale(d[6][d[6].length - 1][1]);
+          return _y
+        })
+        .attr('fill', '#f03b20')
+
+      evacuation_text.transition(3000)
+        .attr('x', ()=>{
+          let _x = _this.xScale(d[6][d[6].length - 1][0]);
+          return _x + 0;
+        })
+        .attr('y', ()=>{
+          let _y = _this.yScale(d[6][d[6].length - 1][1]);
+          return _y - 20;
+        })
+        .attr('fill', 'orange')
+        .style('opacity', 0)
+        .duration()
+      return
+    }
+
+    if(frameNumber >= d[6].length) {
+      return
+    }
+    circle.transition(500)
+      .attr('cx', d=>{
+        let _x = _this.xScale(d[6][frameNumber][0]);
+        return _x;
+      })
+      .attr('cy', d=>{
+        let _y = _this.yScale(d[6][frameNumber][1]);
+        return _y
+      })
+
+
+  })
+};
+StationMap.prototype.initClusterGlyph = function(frameData, frameNumber){
+  // console.log('initCLusterGlyph')
+  let small_clusters= frameData[this.layerId]['small_clusters'];
+  let _this =this;
+  this.clusterGlyphContainer = this.mapComponent.append('g').attr('class','clusterGlyphContainer').attr('transform', 'translate(' + this.offsetX + ',0)');
+
+  this.clusterStartPoints = this.clusterGlyphContainer.selectAll('.startPoint').data(small_clusters).enter().append('circle').attr('class', 'startPoint');
+  this.clusterStartPoints.each(function(d){
+    if(!d[6] || d[6] == "None") {
+      return;
+    }
+    if(d[7]<=0) {
+
+      return;
+    }
+    // console.log('initCLusterGlyph2')
+    let circle = d3.select(this);
+    circle.attr('r', 0).transition(500).attr('r', 5).duration()
+    circle.attr('fill','orange').attr('fill-opacity', 0.3).attr('stroke','orange')
+      .attr('cx', d=>{
+        let _x = _this.xScale(d[6][frameNumber][0]);
+        return _x;
+      })
+      .attr('cy', d=>{
+        let _y = _this.yScale(d[6][frameNumber][1]);
+        return _y
+      });
+  })
 };
 
 

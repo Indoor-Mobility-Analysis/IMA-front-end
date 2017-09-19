@@ -6,7 +6,6 @@ import h337 from "heatmap.js";
 
 let FlowControl = function(el, maps){
   this.$el = el;
-  // this.svg = d3.select(this.$el).select('svg');
   this.height = this.$el.clientHeight;
   this.width = this.$el.clientWidth;
   this.isGateStatusInited = false;
@@ -54,16 +53,6 @@ FlowControl.prototype.initContainer = function(){
   this.mapWidth = this.width * 0.5;
   this.controlComponent = this.svg.append('g').attr('transform', 'translate(' + this.mapWidth + ',0)')
   this.controlWidth = this.width * 0.5;
-
-
-  // this.svg.append('rect').attr('width', this.width).attr('height', this.height)
-  //   .attr('fill', 'red').attr('fill-opacity', 0.1)
-
-  // this.mapComponent.append('rect').attr('width', this.mapWidth).attr('height', this.height)
-  //   .attr('fill', 'red').attr('fill-opacity', 0.1);
-  //
-  // this.controlComponent.append('rect').attr('width', this.controlWidth).attr('height', this.height)
-  //   .attr('fill', 'blue').attr('fill-opacity', 0.1);
 
   this.rootContainer = this.mapComponent;
 
@@ -208,12 +197,6 @@ FlowControl.prototype.initHeatmapContainer = function(){
   this.heatmapInstance = h337.create(config)
   this.canvasHeatmap = this.$el.querySelector('.heatmap-canvas')
 }
-FlowControl.prototype.updateMap = function(frameData, simulatedConfig, frameNumber){
-  this.updateHeatmapCanvas(frameData);
-  this.updatePath(frameData, simulatedConfig, frameNumber);
-  this.updateClusterPosition(frameData, simulatedConfig, frameNumber);
-
-};
 
 FlowControl.prototype.updateHeatmapCanvas = function(frameData) {
   let record = frameData[this.layerId];
@@ -243,6 +226,13 @@ FlowControl.prototype.updateHeatmapCanvas = function(frameData) {
 
 FlowControl.prototype.clearHeatmapCanvas = function() {
   this.heatmapInstance.setData({ max: 0, data: [] })
+};
+
+FlowControl.prototype.updateMap = function(frameData, simulatedConfig, frameNumber){
+  this.updateHeatmapCanvas(frameData);
+  this.updatePath(frameData, simulatedConfig, frameNumber);
+  this.updateClusterPosition(frameData, simulatedConfig, frameNumber);
+
 };
 
 FlowControl.prototype.updateControl = function(frameData, simulatedConfig, frameNumber){

@@ -25,12 +25,16 @@
   import pipeService from '../../service/pipeService'
   import StationMap from '../../lib/StationMap'
   import FlowControl from './FlowControl.vue'
+  import * as d3 from "d3";
 
   export default {
     name: 'Map',
     data(){
       return {
         title: 'Map',
+        containerClass: 'layer-station-map',
+        drawContainerClass: 'layer-station-map_origin',
+        type: 'origin',
         floorSelect: 0,
         mapDataArr:[],
         stationMap: null,
@@ -44,7 +48,6 @@
         frameData: null,
         controlFrame: null,
         keepComponent: true
-
       }
     },
     components:{
@@ -53,14 +56,13 @@
     mounted(){
       let _this = this;
       pipeService.onMapReady(function(mapData){
-        console.log('mapdata', mapData);
         _this.mapDataArr = _this.parseMaps(mapData);
         _this.controlMaps = _this.mapDataArr;
         _this.mapDataArr.forEach(function(mapObj){
-          if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(_this.$el, _this.mapDataArr);
+          if(_this.stationMap == null || _this.stationMap['stationId'] != mapData['stationId']) _this.stationMap = new StationMap(d3.select('.'+_this.containerClass).node(), _this.drawContainerClass, _this.type);
           if(mapObj['floor'] == _this.floorSelect){
-            _this.stationMap.setMap(mapObj);
-            _this.stationMap.onEvent('flowcontrol', function(d){
+            _this.stationMap.setMap(_this.mapDataArr, _this.floorSelect);
+            _this.stationMap.onEvent('flowControl', function(d){
               _this.controlFrame = Object.assign({},_this.frameData);
               _this.dialogVisible = true;
             })
@@ -76,6 +78,7 @@
       });
       // Update render
       pipeService.onRenderOneFrame(function(frame){
+        // console.log('one frame: ', frame)
         _this.frameData = _this.parseFrame(frame);
 
         if(_this.stationMap){
@@ -105,7 +108,7 @@
         }
         _this.mapDataArr.forEach(function(mapObj){
           if(mapObj['floor'] == floorSelect){
-            _this.stationMap.setMap(mapObj);
+            _this.stationMap.setMap(_this.mapDataArr, floorSelect);
           }
         })
         _this.stationMap.setLegend(_this.legendData['legendConfig']);
