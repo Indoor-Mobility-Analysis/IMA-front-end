@@ -300,6 +300,37 @@ StationMap.prototype.updateHeatmapCanvas = function(frameData) {
   this.heatmapInstance.setData(data)
 };
 
+// for control update heatmap
+StationMap.prototype.updateHeatmapCanvasControl = function(frameData, frameNumber) {
+  let record = frameData[this.layerId];
+  let points = [];
+
+  // let max = 0
+  for (let pointIdx in record['small_clusters']) {
+    let flow_record = record['small_clusters'][pointIdx][6]
+    if(!flow_record || flow_record.length <= frameNumber) continue
+    let temp = {
+      x: Math.round((this.xScale(flow_record[frameNumber][0])+this.offsetX)*this.transform.k+this.transform.x),
+      y: Math.round(this.yScale(flow_record[frameNumber][1])*this.transform.k+this.transform.y),
+      value: record['small_clusters'][pointIdx][7],
+      radius: 15*this.transform.k
+    };
+    points.push(temp)
+  }
+
+  // heatmap data format
+  let data = {
+    max: 6,
+    blur: 1,
+    maxOpacity: 0.5,
+    data: points
+  };
+  // if you have a set of data points always use setData instead of addData
+  // for data initialization
+  this.heatmapInstance.setData(data)
+};
+
+
 StationMap.prototype.clearHeatmapCanvas = function() {
   this.heatmapInstance.setData({ max: 0, data: [] })
 };
@@ -418,10 +449,10 @@ StationMap.prototype.updateArrowmap = function(frameData){
 //////////////  below are all for control
 ////////////////////////////////////////////////////////
 StationMap.prototype.updateMap = function(frameData, simulatedConfig, frameNumber){
-  this.updateHeatmapCanvas(frameData);
+  // this.updateHeatmapCanvas(frameData);
+  this.updateHeatmapCanvasControl(frameData, frameNumber)
   this.updatePath(frameData, simulatedConfig, frameNumber);
   this.updateClusterPosition(frameData, simulatedConfig, frameNumber);
-
 };
 
 StationMap.prototype.updateControl = function(frameData, simulatedConfig, frameNumber){
@@ -525,7 +556,6 @@ StationMap.prototype.initGateStatus = function(frameData, simulatedConfig){
   let offsetY = 30;
   let rowHeight = 45;
 
-
   let title = this.gateContainer.append('text').text('Gate Status:').attr('x', 5).attr('font-size', 22)
   title.attr('y', title.node().getBBox().height + 5);
   this.gateStatusContainers  = this.gateContainer.selectAll('.gateStatusContainer')
@@ -570,6 +600,7 @@ StationMap.prototype.initGateStatus = function(frameData, simulatedConfig){
   this.gateBarsForExisted = this.gateStatusContainers.append('rect').attr('x', barOffsetX).attr('fill', '#f4979c').attr('height', barHeight + 5)
     .attr('stroke-width',2).attr('stroke-opacity',0.0)
 };
+
 StationMap.prototype.updatePath = function(frameData, simulatedConfig, frameNumber){
   if(this.fleePathInited == false) {
     this.initPath(frameData, simulatedConfig)
@@ -584,11 +615,11 @@ StationMap.prototype.updatePath = function(frameData, simulatedConfig, frameNumb
       _path.transition(500).attr('stroke','orange').attr('opacity', 1).attr('stroke-width', 3).on('end', function(d){
         d3.select(this).transition(500).attr('stroke-width', 0).duration();
       })
-
       return
     }
   })
 };
+
 StationMap.prototype.initPath = function(frameData, simulatedConfig){
   //Originanl name is updatePath
   let line = d3.line().x((d)=>{
@@ -605,7 +636,7 @@ StationMap.prototype.initPath = function(frameData, simulatedConfig){
     let _container = d3.select(this);
     let pathData = cluster[6]
     // if(cluster[7]<=0) return
-    if(!pathData)return
+    if(!pathData) return
 
     _container.append('path')
       .datum(cluster[6]).attr("fill", "none")
@@ -616,7 +647,6 @@ StationMap.prototype.initPath = function(frameData, simulatedConfig){
       .attr('stroke-dasharray', '2,2')
       .attr('opacity', 0.4)
       .attr("d", line);
-
   })
   this.fleePathInited = true;
 };
@@ -637,7 +667,6 @@ StationMap.prototype.updateClusterPosition = function(frameData, simulatedConfig
     if(frameNumber == (d[6].length)){
       circle.transition(1000).attr('r', 10).on('end', function(d){
         d3.select(this).transition(500).attr('r', 0).duration();
-
       })
       let evacuation_text  = _this.svg.append('text')
       let gate = d[5];

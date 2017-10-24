@@ -30,6 +30,7 @@
       let _this = this;
 
       let frameData = this.controlFrame;
+      console.log('frameData: ', frameData)
       if(!frameData || !frameData[0]){
         console.log('no input');
         return
@@ -38,13 +39,15 @@
       this.flowControl = new FlowControl(this.$el, this.drawContainerClass, this.type);
       this.flowControl.setMap(this.controlMaps, this.mapId);
       this.flowControl.setLegend(this.legendData['legendConfig']);
-      this.flowControl.updateHeatmapCanvas(frameData);
+      // this.flowControl.updateHeatmapCanvas(frameData);
 
 
 
       let layerFrame = frameData[0];
+      console.log('layerFrame: ', layerFrame)
 
       let simulatedConfig = this.processFrameData(layerFrame);
+      console.log('simulatedConfig: ', simulatedConfig)
       let frameNumber = 0;
       this.flowControl.updateMap(frameData, simulatedConfig, frameNumber);
 
